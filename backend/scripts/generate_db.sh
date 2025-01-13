@@ -1,0 +1,1 @@
+sqlc generate -f backend/infra/repos/private/db/sqlc.yaml
