@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -25,6 +26,7 @@ func Serve(ctx context.Context, port int, postgresPool *pgxpool.Pool) *gin.Engin
 	registerCard(ctx, postgresPool, router)
 	registerCategory(ctx, postgresPool, router)
 
+	pprof.Register(router)
 	return router
 }
 

@@ -8,6 +8,8 @@ import (
 	usecase "cashback_info/interactor/use_cases/category"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +21,7 @@ import (
 // @Success 200 {object} category.ListCategoriesResponse "Categories list"
 // @Router /categories [get]
 func (s *CategoryServer) ListCategories(c *gin.Context) {
+	log.Info("CONTROLLER|ListCategories| Processing request to list categories")
 
 	inputDTO := dto.ListCategoriesInputDTO{}
 	presenter := &presenter.ListCategoriesPresenter{}
@@ -30,14 +33,15 @@ func (s *CategoryServer) ListCategories(c *gin.Context) {
 	}
 
 	outputDTO, err := useCase.Execute(s.ctx, inputDTO)
-
 	if err != nil {
+		log.Error("CONTROLLER|ListCategories| Error while executing use case -> ", err)
 		code, err := utility.TransformErrorToHttpError(err)
 		c.AbortWithStatusJSON(code, gin.H{"error": err})
 		return
 	}
 
 	response := presenter.Present(outputDTO)
+	log.Info("CONTROLLER|ListCategories| Successfully retrieved categories")
 
 	c.JSON(http.StatusOK, response)
 }

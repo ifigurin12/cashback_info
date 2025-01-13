@@ -8,6 +8,8 @@ import (
 	utility "cashback_info/infra/repos/private"
 	"cashback_info/infra/repos/private/db"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/google/uuid"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -27,6 +29,7 @@ func (r *PostgresRepo) ListCardsByUserID(ctx context.Context, userID uuid.UUID) 
 	items, err := queries.ListCardsByUserID(ctx, userID)
 
 	if err != nil {
+		log.Error("REPOSITORY|ListCardsByUserID| Failed to list cards by user id -> ", err, "with user id - ", userID.String())
 		return nil, utility.TransformError(err)
 	}
 
@@ -36,6 +39,7 @@ func (r *PostgresRepo) ListCardsByUserID(ctx context.Context, userID uuid.UUID) 
 		bankType := entity.CreateBankTypeFromString(string(item.BankType))
 
 		if bankType == nil {
+			log.Error("REPOSITORY|ListCategories| Failed to convert bank type with value - ", string(item.BankType))
 			return nil, fmt.Errorf("unknown bank type: %s", item.BankType)
 		}
 

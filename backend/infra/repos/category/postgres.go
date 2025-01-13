@@ -9,6 +9,7 @@ import (
 	"cashback_info/infra/repos/private/db"
 
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -27,6 +28,7 @@ func (r *PostgresRepo) ListCategories(ctx context.Context) ([]entity.Category, e
 	items, err := queries.ListCategories(ctx)
 
 	if err != nil {
+		log.Error("REPOSITORY|ListCategories| Failed to list categories -> ", err)
 		return nil, utility.TransformError(err)
 	}
 
@@ -37,6 +39,7 @@ func (r *PostgresRepo) ListCategories(ctx context.Context) ([]entity.Category, e
 		bankType := entity.CreateBankTypeFromString(string(item.BankType))
 
 		if bankType == nil {
+			log.Error("REPOSITORY|ListCategories| Failed to convert bank type with value - ", string(item.BankType))
 			return nil, fmt.Errorf("unknown bank type: %s", item.BankType)
 		}
 
@@ -59,6 +62,7 @@ func (r *PostgresRepo) ListCategoriesByCardIDs(ctx context.Context, cardIDs []uu
 	items, err := queries.ListCategoriesByCardIDs(ctx, cardIDs)
 
 	if err != nil {
+		log.Error("REPOSITORY|ListCategoriesByCardIDs| Failed to list categories by card ids -> ", err)
 		return nil, utility.TransformError(err)
 	}
 
@@ -69,6 +73,7 @@ func (r *PostgresRepo) ListCategoriesByCardIDs(ctx context.Context, cardIDs []uu
 		bankType := entity.CreateBankTypeFromString(string(item.BankType))
 
 		if bankType == nil {
+			log.Error("REPOSITORY|ListCategoriesByCardIDs| Failed to convert bank type with value - ", string(item.BankType))
 			return nil, fmt.Errorf("unknown bank type: %s", item.BankType)
 		}
 

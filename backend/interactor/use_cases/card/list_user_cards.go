@@ -7,6 +7,8 @@ import (
 	dto "cashback_info/interactor/dtos/card"
 	repo "cashback_info/interactor/ifaces/repos"
 
+	log "github.com/sirupsen/logrus"
+
 	uuid "github.com/google/uuid"
 )
 
@@ -19,6 +21,7 @@ func (u *ListUserCardsUseCase) Execute(ctx context.Context, inputDTO dto.ListUse
 	cards, err := u.CardRepo.ListCardsByUserID(ctx, inputDTO.UserID)
 
 	if err != nil {
+		log.Error("USE_CASE|ListUserCards| Failed to list cards by user ID -> ", err, " by user id - ", inputDTO.UserID.String())
 		return nil, err
 	}
 
@@ -31,6 +34,7 @@ func (u *ListUserCardsUseCase) Execute(ctx context.Context, inputDTO dto.ListUse
 	categories, err := u.CategoryRepo.ListCategoriesByCardIDs(ctx, cardIDs)
 
 	if err != nil {
+		log.Error("USE_CASE|ListUserCards| Failed to list categories by card ids -> ", err, " by user id - ", inputDTO.UserID.String())
 		return nil, err
 	}
 
@@ -51,5 +55,4 @@ func (u *ListUserCardsUseCase) Execute(ctx context.Context, inputDTO dto.ListUse
 	return &dto.ListUserCardsOutputDTO{
 		Items: result,
 	}, nil
-
 }

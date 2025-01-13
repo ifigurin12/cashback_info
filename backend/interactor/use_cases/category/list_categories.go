@@ -5,6 +5,8 @@ import (
 
 	dto "cashback_info/interactor/dtos/category"
 	repo "cashback_info/interactor/ifaces/repos"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type ListCategoriesUseCase struct {
@@ -15,6 +17,7 @@ func (u *ListCategoriesUseCase) Execute(ctx context.Context, inputDTO dto.ListCa
 	result, err := u.CategoryRepo.ListCategories(ctx)
 
 	if err != nil {
+		log.Error("USE_CASE|ListUserCards|  Failed to list categories -> ", err)
 		return nil, err
 	}
 
