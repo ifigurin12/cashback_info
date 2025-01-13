@@ -1,0 +1,128 @@
+definitions:
+  card.BankType:
+    enum:
+    - vtb
+    - alfa
+    - tinkoff
+    - pochta
+    - gazprom
+    type: string
+    x-enum-varnames:
+    - BankTypeVTB
+    - BankTypeAlfa
+    - BankTypeTinkoff
+    - BankTypePochta
+    - BankTypeGazprom
+  card.Card:
+    properties:
+      bank_type:
+        $ref: '#/definitions/card.BankType'
+      date_created:
+        type: string
+      id:
+        type: string
+      last_updated_at:
+        type: string
+      title:
+        type: string
+    type: object
+  card.CardWithCategories:
+    properties:
+      card:
+        $ref: '#/definitions/card.Card'
+      categories:
+        items:
+          $ref: '#/definitions/card.Category'
+        type: array
+    type: object
+  card.Category:
+    properties:
+      bank_type:
+        $ref: '#/definitions/card.BankType'
+      date_created:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      mcc_codes:
+        items:
+          $ref: '#/definitions/card.M%D0%A1%D0%A1Code'
+        type: array
+      title:
+        type: string
+    type: object
+  card.ListUserCardsResoponse:
+    properties:
+      result:
+        items:
+          $ref: '#/definitions/card.CardWithCategories'
+        type: array
+    type: object
+  card.MССCode:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+    type: object
+  category.ListCategoriesResponse:
+    properties:
+      result:
+        items:
+          $ref: '#/definitions/card.Category'
+        type: array
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+info:
+  contact: {}
+  description: Cashback-Info API
+  title: Cashback-Info API Documentation
+  version: 0.0.1
+paths:
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Return categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Categories list
+          schema:
+            $ref: '#/definitions/category.ListCategoriesResponse'
+      summary: List Categories
+      tags:
+      - Card
+  /users/{user_id}/cards:
+    get:
+      consumes:
+      - application/json
+      description: Return cards by user id
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cards list
+          schema:
+            $ref: '#/definitions/card.ListUserCardsResoponse'
+      summary: List User Cards
+      tags:
+      - Card
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

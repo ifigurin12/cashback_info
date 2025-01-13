@@ -17,11 +17,11 @@ type PostgresRepo struct {
 	postgresPool *pgxpool.Pool
 }
 
-func NewPostgresRepo(postgresPool *pgxpool.Pool) *PostgresRepo {
+func NewCategoryRepo(postgresPool *pgxpool.Pool) *PostgresRepo {
 	return &PostgresRepo{postgresPool}
 }
 
-func (r *PostgresRepo) ListCategories(ctx context.Context, userID uuid.UUID) ([]entity.Category, error) {
+func (r *PostgresRepo) ListCategories(ctx context.Context) ([]entity.Category, error) {
 	queries := db.New(r.postgresPool)
 
 	items, err := queries.ListCategories(ctx)

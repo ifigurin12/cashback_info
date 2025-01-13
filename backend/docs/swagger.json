@@ -1,0 +1,192 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Cashback-Info API",
+        "title": "Cashback-Info API Documentation",
+        "contact": {},
+        "version": "0.0.1"
+    },
+    "paths": {
+        "/categories": {
+            "get": {
+                "description": "Return categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Card"
+                ],
+                "summary": "List Categories",
+                "responses": {
+                    "200": {
+                        "description": "Categories list",
+                        "schema": {
+                            "$ref": "#/definitions/category.ListCategoriesResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/cards": {
+            "get": {
+                "description": "Return cards by user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Card"
+                ],
+                "summary": "List User Cards",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cards list",
+                        "schema": {
+                            "$ref": "#/definitions/card.ListUserCardsResoponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "card.BankType": {
+            "type": "string",
+            "enum": [
+                "vtb",
+                "alfa",
+                "tinkoff",
+                "pochta",
+                "gazprom"
+            ],
+            "x-enum-varnames": [
+                "BankTypeVTB",
+                "BankTypeAlfa",
+                "BankTypeTinkoff",
+                "BankTypePochta",
+                "BankTypeGazprom"
+            ]
+        },
+        "card.Card": {
+            "type": "object",
+            "properties": {
+                "bank_type": {
+                    "$ref": "#/definitions/card.BankType"
+                },
+                "date_created": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_updated_at": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "card.CardWithCategories": {
+            "type": "object",
+            "properties": {
+                "card": {
+                    "$ref": "#/definitions/card.Card"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/card.Category"
+                    }
+                }
+            }
+        },
+        "card.Category": {
+            "type": "object",
+            "properties": {
+                "bank_type": {
+                    "$ref": "#/definitions/card.BankType"
+                },
+                "date_created": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mcc_codes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/card.M%D0%A1%D0%A1Code"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "card.ListUserCardsResoponse": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/card.CardWithCategories"
+                    }
+                }
+            }
+        },
+        "card.MССCode": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "category.ListCategoriesResponse": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/card.Category"
+                    }
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "https://swagger.io/resources/open-api/"
+    }
+}

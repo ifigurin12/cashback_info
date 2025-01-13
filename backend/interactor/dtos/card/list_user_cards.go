@@ -6,10 +6,10 @@ import (
 	"github.com/google/uuid"
 )
 
-type ListCardsInputDTO struct {
+type ListUserCardsInputDTO struct {
 	UserID uuid.UUID
 }
 
-type ListCardsOutputDTO struct {
+type ListUserCardsOutputDTO struct {
 	Items []entity.CardWithCategories
 }

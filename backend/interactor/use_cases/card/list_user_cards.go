@@ -1,4 +1,4 @@
-package category
+package card
 
 import (
 	"context"
@@ -10,12 +10,12 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-type ListCardsUseCase struct {
+type ListUserCardsUseCase struct {
 	CardRepo     repo.ICardRepo
 	CategoryRepo repo.ICategoryRepo
 }
 
-func (u *ListCardsUseCase) Execute(ctx context.Context, inputDTO dto.ListCardsInputDTO) (*dto.ListCardsOutputDTO, error) {
+func (u *ListUserCardsUseCase) Execute(ctx context.Context, inputDTO dto.ListUserCardsInputDTO) (*dto.ListUserCardsOutputDTO, error) {
 	cards, err := u.CardRepo.ListCardsByUserID(ctx, inputDTO.UserID)
 
 	if err != nil {
@@ -48,7 +48,7 @@ func (u *ListCardsUseCase) Execute(ctx context.Context, inputDTO dto.ListCardsIn
 		result = append(result, cardWithCategories)
 	}
 
-	return &dto.ListCardsOutputDTO{
+	return &dto.ListUserCardsOutputDTO{
 		Items: result,
 	}, nil
 

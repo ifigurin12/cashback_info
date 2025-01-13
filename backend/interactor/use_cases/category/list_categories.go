@@ -19,7 +19,7 @@ func (u *ListCategoriesUseCase) Execute(ctx context.Context, inputDTO dto.ListCa
 	}
 
 	return &dto.ListCategoriesOutputDTO{
-		Categories: result,
+		Items: result,
 	}, nil
 
 }

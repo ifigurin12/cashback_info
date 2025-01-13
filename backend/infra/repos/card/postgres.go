@@ -17,7 +17,7 @@ type PostgresRepo struct {
 	postgresPool *pgxpool.Pool
 }
 
-func NewPostgresRepo(postgresPool *pgxpool.Pool) *PostgresRepo {
+func NewCardRepo(postgresPool *pgxpool.Pool) *PostgresRepo {
 	return &PostgresRepo{postgresPool}
 }
 

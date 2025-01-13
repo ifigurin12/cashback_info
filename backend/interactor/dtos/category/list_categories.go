@@ -8,5 +8,5 @@ type ListCategoriesInputDTO struct {
 }
 
 type ListCategoriesOutputDTO struct {
-	Categories []entity.Category `json:"categories"`
+	Items []entity.Category `json:"categories"`
 }
