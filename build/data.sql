@@ -1,3 +1,10 @@
+INSERT INTO banks (name) VALUES
+('vtb'),
+('alfa'),
+('tinkoff'),
+('pochta'),
+('gazprom');
+
 -- Вставляем 3 пользователей
 INSERT INTO users (id, username, email, phone, password_hash, role_type, date_created)
 VALUES 
@@ -30,21 +37,21 @@ VALUES
 -- Вставляем по одной карте для каждого пользователя
 INSERT INTO cards (id, title, user_id, bank_type,  date_created, last_updated_at)
 VALUES
-    (gen_random_uuid(), 'Card for user1', (SELECT id FROM users WHERE username = 'user1'), 'vtb', NOW(), NOW()),
-    (gen_random_uuid(), 'Card for user2', (SELECT id FROM users WHERE username = 'user2'), 'alfa', NOW(), NOW()),
-    (gen_random_uuid(), 'Card 1 for user3', (SELECT id FROM users WHERE username = 'user3'), 'vtb', NOW(), NOW()),
-    (gen_random_uuid(), 'Card 2 for user3', (SELECT id FROM users WHERE username = 'user3'), 'alfa', NOW(), NOW()),
-    (gen_random_uuid(), 'Card 3 for user3', (SELECT id FROM users WHERE username = 'user3'), 'alfa', NOW(), NOW());
+    (gen_random_uuid(), 'Card for user1', (SELECT id FROM users WHERE username = 'user1'), (SELECT id FROM users WHERE name = 'vtb'), NOW(), NOW()),
+    (gen_random_uuid(), 'Card for user2', (SELECT id FROM users WHERE username = 'user2'), (SELECT id FROM users WHERE username = 'alfa'), NOW(), NOW()),
+    (gen_random_uuid(), 'Card 1 for user3', (SELECT id FROM users WHERE username = 'user3'), (SELECT id FROM users WHERE name = 'vtb'), NOW(), NOW()),
+    (gen_random_uuid(), 'Card 2 for user3', (SELECT id FROM users WHERE username = 'user3'), (SELECT id FROM users WHERE username = 'alfa'), NOW(), NOW()),
+    (gen_random_uuid(), 'Card 3 for user3', (SELECT id FROM users WHERE username = 'user3'), (SELECT id FROM users WHERE username = 'alfa'), NOW(), NOW());
 
 
 
 -- Вставка категорий
 INSERT INTO categories (id, title, bank_type, description)
 VALUES 
-    (gen_random_uuid(), 'Groceries', 'vtb', 'Everyday groceries and supermarkets'),
-    (gen_random_uuid(), 'Travel', 'alfa', 'Flights, hotels, and travel-related expenses'),
-    (gen_random_uuid(), 'Restaurants', 'vtb', 'Dining out and restaurants'),
-    (gen_random_uuid(), 'Electronics', 'alfa', 'Gadgets, electronics, and tech stores');
+    (gen_random_uuid(), 'Groceries', (SELECT id FROM users WHERE name = 'vtb'), 'Everyday groceries and supermarkets'),
+    (gen_random_uuid(), 'Travel', (SELECT id FROM users WHERE username = 'alfa'), 'Flights, hotels, and travel-related expenses'),
+    (gen_random_uuid(), 'Restaurants', (SELECT id FROM users WHERE name = 'vtb'), 'Dining out and restaurants'),
+    (gen_random_uuid(), 'Electronics', (SELECT id FROM users WHERE username = 'alfa'), 'Gadgets, electronics, and tech stores');
 
 -- Вставка MCC-кодов
 INSERT INTO mcc_dictionary (code, description)

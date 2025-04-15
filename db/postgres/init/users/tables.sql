@@ -1,5 +1,5 @@
 
-CREATE TYPE role_types AS ENUM ('default', 'family_member', 'family_leader', 'admin');
+CREATE TYPE role_types AS ENUM ('default', 'admin');
 
 
 CREATE TABLE users (
