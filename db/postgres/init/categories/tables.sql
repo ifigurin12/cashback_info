@@ -1,23 +1,27 @@
-CREATE TABLE banks (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE
-);
-
-CREATE TABLE categories (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(50) NOT NULL,
-    bank_id INT NOT NULL, -- Изменено на bank_id
-    date_created TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-    description TEXT,
-    FOREIGN KEY (bank_id) REFERENCES banks (id) ON DELETE CASCADE -- Связь с таблицей banks
-);
+CREATE TABLE
+    banks (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(50) NOT NULL UNIQUE
+    );
 
 CREATE TABLE
     categories (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
         title VARCHAR(50) NOT NULL,
-        bank_id bank_types NOT NULL,
+        bank_id INT NOT NULL, -- Изменено на bank_id
+        date_created TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW (),
         description TEXT,
+        FOREIGN KEY (bank_id) REFERENCES banks (id) ON DELETE CASCADE -- Связь с таблицей banks
+    );
+
+CREATE TABLE
+    categories (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        title VARCHAR(50) NOT NULL,
+        user_id UUID NOT NULL,
+        bank_id INTEGER,
+        description TEXT,
+        FOREIGN KEY (user_id) REFERENCES categories (id) ON DELETE CASCADE,
     );
 
 CREATE TABLE
