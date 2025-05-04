@@ -1,7 +1,7 @@
 package cashback
 
 import (
-	model "cashback_info/internal/model/category"
+	model "cashback_info/internal/model/category/cashback"
 	"errors"
 
 	"gorm.io/gorm"
@@ -10,7 +10,7 @@ import (
 type CategoryCashbackRepository interface {
 	Create(items []model.CategoryCashback) error
 	ListByParams(cardID string, page int, pageSize int) ([]model.CategoryCashback, error)
-	Update(categoryCashback *model.CategoryCashback) error
+	Update(categoryCashback model.CategoryCashback) error
 	Delete(cardID, categoryID string) error
 }
 
@@ -40,7 +40,7 @@ func (r *categoryCashbackRepository) ListByParams(cardID string, page int, pageS
 	return categoryCashbacks, nil
 }
 
-func (r *categoryCashbackRepository) Update(categoryCashback *model.CategoryCashback) error {
+func (r *categoryCashbackRepository) Update(categoryCashback model.CategoryCashback) error {
 	if err := r.db.Save(categoryCashback).Error; err != nil {
 		return err
 	}

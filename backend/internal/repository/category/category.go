@@ -8,9 +8,9 @@ import (
 )
 
 type CategoryRepository interface {
-	Create(category *model.Category) error
+	Create(categories []model.Category) error
 	ListByParams(bankID *uint, userID *string, page int, pageSize int) ([]model.Category, error)
-	Update(category *model.Category) error
+	Update(category model.Category) error
 	Delete(id string) error
 }
 
@@ -22,8 +22,8 @@ func NewCategoryRepository(db *gorm.DB) CategoryRepository {
 	return &categoryRepository{db: db}
 }
 
-func (r *categoryRepository) Create(category *model.Category) error {
-	if err := r.db.Create(category).Error; err != nil {
+func (r *categoryRepository) Create(categories []model.Category) error {
+	if err := r.db.Create(categories).Error; err != nil {
 		return err
 	}
 	return nil
@@ -41,7 +41,7 @@ func (r *categoryRepository) ListByParams(bankID *uint, userID *string, page int
 	return categories, nil
 }
 
-func (r *categoryRepository) Update(category *model.Category) error {
+func (r *categoryRepository) Update(category model.Category) error {
 	if err := r.db.Save(category).Error; err != nil {
 		return err
 	}
