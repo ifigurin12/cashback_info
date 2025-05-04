@@ -18,7 +18,7 @@ func main() {
 	logger := setupLogger(cfg)
 	logger.Info("cashback-info service started up in %s mode", cfg.Env)
 
-	storage, err := postgres.NewPostgresStorage(context.Background(), cfg.Storage)
+	storage, err := postgres.NewPostgresStorage(context.Background(), cfg.Host, cfg.User, cfg.Name, cfg.Pass, cfg.Port)
 	if err != nil {
 		logger.Error("Failed to connect to Postgres:", err)
 		os.Exit(1)

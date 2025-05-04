@@ -8,37 +8,30 @@ CREATE TABLE
     categories (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
         title VARCHAR(50) NOT NULL,
-        bank_id INT NOT NULL, -- Изменено на bank_id
-        date_created TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW (),
-        description TEXT,
-        FOREIGN KEY (bank_id) REFERENCES banks (id) ON DELETE CASCADE -- Связь с таблицей banks
-    );
-
-CREATE TABLE
-    categories (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-        title VARCHAR(50) NOT NULL,
-        user_id UUID NOT NULL,
+        user_id UUID,
         bank_id INTEGER,
         description TEXT,
         FOREIGN KEY (user_id) REFERENCES categories (id) ON DELETE CASCADE,
+        CHECK (
+            user_id IS NOT NULL
+            OR bank_id IS NOT NULL
+        )
     );
 
 CREATE TABLE
     category_cashbacks (
-        card_id UUID NOT NULL, -- Идентификатор карты
-        category_id UUID NOT NULL, -- Идентификатор категории
+        card_id UUID NOT NULL,
+        category_id UUID NOT NULL,
         cashback_percentage DECIMAL(5, 1) CHECK (
             cashback_percentage > 0
             AND cashback_percentage <= 100
-        ) NOT NULL, -- Процент кэшбека от 0 до 100 с 1 знаком после запятой
-        start_date TIMESTAMP WITHOUT TIME ZONE, -- Дата начала действия кэшбека
-        end_date TIMESTAMP WITHOUT TIME ZONE, -- Дата окончания действия кэшбека
-        limit
-            DECIMAL(10, 2), -- Лимит кэшбека (например, максимальная сумма кэшбека)
-            FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE, -- Внешний ключ для category_id
-            FOREIGN KEY (card_id) REFERENCES cards (id) ON DELETE CASCADE, -- Внешний ключ для card_id
-            PRIMARY KEY (card_id, category_id) -- Составной первичный ключ
+        ) NOT NULL,
+        cashback_limit INT CHECK (cashback_limit > 0) NOT NULL,
+        start_date TIMESTAMP WITHOUT TIME ZONE,
+        end_date TIMESTAMP WITHOUT TIME ZONE,
+        FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE,
+        FOREIGN KEY (card_id) REFERENCES cards (id) ON DELETE CASCADE,
+        PRIMARY KEY (card_id, category_id)
     );
 
 CREATE TABLE
