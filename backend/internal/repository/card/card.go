@@ -22,7 +22,6 @@ func NewCardRepository(db *gorm.DB) CardRepository {
 	return &cardRepository{db: db}
 }
 
-// Create implements CardRepository.
 func (r *cardRepository) Create(card model.Card) error {
 	if err := r.db.Create(&card).Error; err != nil {
 		return err
