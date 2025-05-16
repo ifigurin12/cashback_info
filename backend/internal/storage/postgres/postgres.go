@@ -17,6 +17,10 @@ func (s *PostgresStorage) Close() {
 	postgresDB.Close()
 }
 
+func (s *PostgresStorage) DB() *gorm.DB {
+	return s.db
+}
+
 func NewPostgresStorage(ctx context.Context, DBHost, DBUser, DBName, DBPass, DBPort string) (*PostgresStorage, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s dbname=%s password=%s port=%s sslmode=disable",

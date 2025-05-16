@@ -8,7 +8,7 @@ import (
 
 type UserRepository interface {
 	GetByID(id string) (*model.User, error)
-	Create(user model.User) error
+	Create(user model.User) (*string, error)
 	Update(user model.User) error
 	Delete(id string) error
 }
@@ -29,11 +29,11 @@ func (r *userRepository) GetByID(id string) (*model.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) Create(user model.User) error {
+func (r *userRepository) Create(user model.User) (*string, error) {
 	if err := r.db.Create(&user).Error; err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &user.ID, nil
 }
 
 func (r *userRepository) Update(user model.User) error {

@@ -2,6 +2,8 @@ package main
 
 import (
 	"cashback_info/internal/config"
+	familyuser "cashback_info/internal/model/family/user"
+	familyuserrepo "cashback_info/internal/repository/family/user"
 	"cashback_info/internal/storage/postgres"
 	"context"
 	"log"
@@ -24,8 +26,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	defer storage.Close()
+	familyUserRepository := familyuserrepo.NewFamilyUserRepository(storage.DB())
+	err = familyUserRepository.Create(familyuser.FamilyUser{FamilyID: "365afedc-e49d-4ab7-a243-158f360dd11c", UserID: "59e807df-1d32-4c3f-9890-5aa716de87c6"})
+	if err != nil {
+		logger.Error("Failed to create family user:", err)
+		os.Exit(1)
+	}
 
+	logger.Info("Connected to Postgres")
 }
 
 func setupLogger(cfg *config.Config) *slog.Logger {

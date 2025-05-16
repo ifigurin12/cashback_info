@@ -1,16 +1,16 @@
 package card
 
 import (
-	model "cashback_info/internal/model/Card"
+	entity "cashback_info/internal/model/card"
 	"errors"
 
 	"gorm.io/gorm"
 )
 
 type CardRepository interface {
-	Create(card model.Card) error
-	ListByParams(userID string, page int, pageSize int) ([]model.Card, error)
-	Update(card model.Card) error
+	Create(card entity.Card) error
+	ListByParams(userID string, page int, pageSize int) ([]entity.Card, error)
+	Update(card entity.Card) error
 	Delete(id string) error
 }
 
@@ -22,15 +22,15 @@ func NewCardRepository(db *gorm.DB) CardRepository {
 	return &cardRepository{db: db}
 }
 
-func (r *cardRepository) Create(card model.Card) error {
+func (r *cardRepository) Create(card entity.Card) error {
 	if err := r.db.Create(&card).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *cardRepository) ListByParams(userID string, page int, pageSize int) ([]model.Card, error) {
-	var cards []model.Card
+func (r *cardRepository) ListByParams(userID string, page int, pageSize int) ([]entity.Card, error) {
+	var cards []entity.Card
 	if err := r.db.Where("user_id = ?", userID).Find(&cards).Limit(pageSize).Offset((page - 1) * pageSize).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -41,7 +41,7 @@ func (r *cardRepository) ListByParams(userID string, page int, pageSize int) ([]
 	return cards, nil
 }
 
-func (r *cardRepository) Update(card model.Card) error {
+func (r *cardRepository) Update(card entity.Card) error {
 	if err := r.db.Save(card).Error; err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func (r *cardRepository) Update(card model.Card) error {
 }
 
 func (r *cardRepository) Delete(id string) error {
-	if err := r.db.Delete(&model.Card{}, id).Error; err != nil {
+	if err := r.db.Delete(&entity.Card{}, id).Error; err != nil {
 		return err
 	}
 	return nil

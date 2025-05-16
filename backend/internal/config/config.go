@@ -18,7 +18,7 @@ type Env string
 type Config struct {
 	Env        `env:"ENV" env-required:"true" validate:"required,oneof=local dev prod"`
 	Storage    `env-required:"true"`
-	HTTPServer `env-required:"true"`
+	HTTPServer `env-required:"false"`
 }
 
 type Storage struct {

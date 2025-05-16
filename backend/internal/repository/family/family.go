@@ -7,7 +7,7 @@ import (
 )
 
 type FamilyRepository interface {
-	Create(family model.Family) error
+	Create(family model.Family) (*string, error)
 	GetByID(id string) (*model.Family, error)
 	Update(family model.Family) error
 	Delete(id string) error
@@ -22,16 +22,16 @@ func NewFamilyRepository(db *gorm.DB) FamilyRepository {
 }
 
 // Create implements FamilyRepository.
-func (f *familyRepository) Create(family model.Family) error {
+func (f *familyRepository) Create(family model.Family) (*string, error) {
 	if err := f.db.Create(&family).Error; err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &family.ID, nil
 }
 
 func (f *familyRepository) GetByID(id string) (*model.Family, error) {
 	var family model.Family
-	if err := f.db.First(&family, id).Error; err != nil {
+	if err := f.db.Where("id = ?", id).First(&family).Error; err != nil {
 		return nil, err
 	}
 	return &family, nil

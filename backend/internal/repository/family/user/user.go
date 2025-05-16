@@ -7,8 +7,8 @@ import (
 )
 
 type FamilyUserRepository interface {
-	Create(familyUsers []model.FamiliesUser) error
-	ListByParams(familyID string) ([]model.FamiliesUser, error)
+	Create(familyUser model.FamilyUser) error
+	ListByParams(familyID string) ([]model.FamilyUser, error)
 	Delete(familyID string) error
 }
 
@@ -16,14 +16,14 @@ type familyUserRepository struct {
 	db *gorm.DB
 }
 
-func (f *familyUserRepository) Create(familyUsers []model.FamiliesUser) error {
-	if err := f.db.Create(&familyUsers).Error; err != nil {
+func (f *familyUserRepository) Create(familyUser model.FamilyUser) error {
+	if err := f.db.Create(&familyUser).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (f *familyUserRepository) ListByParams(familyID string) ([]model.FamiliesUser, error) {
+func (f *familyUserRepository) ListByParams(familyID string) ([]model.FamilyUser, error) {
 	panic("unimplemented")
 }
 
