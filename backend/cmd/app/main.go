@@ -2,8 +2,8 @@ package main
 
 import (
 	"cashback_info/internal/config"
-	familyuser "cashback_info/internal/model/family/user"
 	familyuserrepo "cashback_info/internal/repository/family/user"
+	familyuser "cashback_info/internal/repository/model/family/user"
 	"cashback_info/internal/storage/postgres"
 	"context"
 	"log"

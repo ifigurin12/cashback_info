@@ -1,7 +1,7 @@
 package user
 
 import (
-	model "cashback_info/internal/model/family/user"
+	model "cashback_info/internal/repository/model/family/user"
 
 	"gorm.io/gorm"
 )

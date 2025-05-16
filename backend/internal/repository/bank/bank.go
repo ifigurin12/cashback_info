@@ -1,7 +1,7 @@
 package bank
 
 import (
-	model "cashback_info/internal/model/bank"
+	model "cashback_info/internal/repository/model/bank"
 
 	"gorm.io/gorm"
 )

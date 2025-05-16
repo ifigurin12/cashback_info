@@ -1,6 +1,6 @@
 package user
 
-import "cashback_info/internal/model/user"
+import "cashback_info/internal/repository/model/user"
 
 type FamilyUser struct {
 	FamilyID string    `gorm:"type:uuid;not null" json:"family_id"`

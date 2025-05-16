@@ -1,7 +1,7 @@
 package family
 
 import (
-	model "cashback_info/internal/model/family"
+	model "cashback_info/internal/repository/model/family"
 
 	"gorm.io/gorm"
 )

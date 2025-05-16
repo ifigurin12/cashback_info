@@ -1,7 +1,7 @@
 package cashback
 
 import (
-	model "cashback_info/internal/model/category/cashback"
+	model "cashback_info/internal/repository/model/category/cashback"
 	"errors"
 
 	"gorm.io/gorm"

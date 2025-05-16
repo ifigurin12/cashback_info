@@ -1,7 +1,7 @@
 package category
 
 import (
-	entity "cashback_info/internal/model/category"
+	entity "cashback_info/internal/repository/model/category"
 	"errors"
 
 	"gorm.io/gorm"

@@ -1,18 +1,26 @@
 package category
 
 import (
-	"time"
+	"cashback_info/internal/model/category/cashback"
+	"cashback_info/internal/model/mcc"
 )
 
 type Category struct {
-	ID          string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
-	Title       string    `gorm:"type:varchar(50);not null" json:"title"`
-	BankID      *uint     `gorm:"type:int" json:"bank_id,omitempty"`
-	UserID      *string   `gorm:"type:uuid" json:"user_id,omitempty"`
-	Description *string   `gorm:"type:text" json:"description,omitempty"`
-	DateCreated time.Time `gorm:"type:timestamp;default:now();not null" json:"date_created"`
+	ID          string    `json:"id" binding:"required"`
+	Title       string    `json:"title" binding:"required"`
+	Source      Source    `json:"source" binding:"required"`
+	MCCCodes    []mcc.MCC `json:"mcc_codes" binding:"required"`
+	Description *string   `json:"description,omitempty"`
 }
 
-func (Category) TableName() string {
-	return "categories"
+type CategoryWithCashback struct {
+	Category
+	cashback.Cashback
 }
+
+type Source string
+
+const (
+	SourceUser Source = "user"
+	SourceBank Source = "bank"
+)

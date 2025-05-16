@@ -1,7 +1,7 @@
 package card
 
 import (
-	entity "cashback_info/internal/model/card"
+	entity "cashback_info/internal/repository/model/card"
 	"errors"
 
 	"gorm.io/gorm"

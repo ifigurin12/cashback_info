@@ -1,7 +1,10 @@
 package family
 
+import "cashback_info/internal/model/user"
+
 type Family struct {
-	ID       string `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
-	Title    string `gorm:"type:varchar(50);not null" json:"title"`
-	LeaderID string `gorm:"type:uuid;not null" json:"leader_id"`
+	ID      string      `json:"id" binding:"required"`
+	Title   string      `json:"title" binding:"required"`
+	Leader  user.User   `json:"leader" binding:"required"`
+	Members []user.User `json:"members" binding:"required"`
 }
