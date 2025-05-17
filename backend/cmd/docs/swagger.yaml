@@ -1,0 +1,220 @@
+definitions:
+  bank.Bank:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  category.Category:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      mcc_codes:
+        items:
+          $ref: '#/definitions/mcc.MCC'
+        type: array
+      source:
+        $ref: '#/definitions/category.Source'
+      title:
+        type: string
+    required:
+    - id
+    - mcc_codes
+    - source
+    - title
+    type: object
+  category.Source:
+    enum:
+    - user
+    - bank
+    type: string
+    x-enum-varnames:
+    - SourceUser
+    - SourceBank
+  mcc.MCC:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  request.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - email
+    - login
+    - password
+    type: object
+  request.EmailLoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  user.RoleType:
+    enum:
+    - default
+    - admin
+    type: string
+    x-enum-varnames:
+    - Default
+    - Admin
+  user.Token:
+    properties:
+      expiration_time:
+        type: string
+      token:
+        type: string
+    required:
+    - expiration_time
+    - token
+    type: object
+  user.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      login:
+        type: string
+      phone:
+        type: string
+      role_type:
+        $ref: '#/definitions/user.RoleType'
+    required:
+    - email
+    - id
+    - login
+    - role_type
+    type: object
+info:
+  contact: {}
+  description: Cashback-info API
+  title: Cashback-info API
+  version: "1.0"
+paths:
+  /banks:
+    get:
+      description: Возвращает список банков
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список банков
+          schema:
+            items:
+              $ref: '#/definitions/bank.Bank'
+            type: array
+      summary: Получение списка банков
+      tags:
+      - Banks
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список категорий для указанного банка
+      parameters:
+      - description: Bank ID
+        in: query
+        name: bank-id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/category.Category'
+            type: array
+      summary: Получение списка категорий
+      tags:
+      - Category
+  /email/login:
+    post:
+      consumes:
+      - application/json
+      description: Возвращает токен и время истечения при успешной аутентификации
+      parameters:
+      - description: Email and password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmailLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.Token'
+      summary: Аутентификация пользователя по электронной почте
+      tags:
+      - Auth
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Создает нового пользователя и возвращает код
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: Создание нового пользователя
+      tags:
+      - User
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает данные пользователя по указанному ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.User'
+      summary: Получение пользователя по ID
+      tags:
+      - User
+swagger: "2.0"

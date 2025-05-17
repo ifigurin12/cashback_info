@@ -7,7 +7,7 @@ import (
 )
 
 type BankRepository interface {
-	List() ([]model.Bank, error)
+	List() ([]model.BankDB, error)
 }
 
 type bankRepository struct {
@@ -18,8 +18,8 @@ func NewBankRepository(db *gorm.DB) BankRepository {
 	return &bankRepository{db: db}
 }
 
-func (b *bankRepository) List() ([]model.Bank, error) {
-	var banks []model.Bank
+func (b *bankRepository) List() ([]model.BankDB, error) {
+	var banks []model.BankDB
 	if err := b.db.Find(&banks).Error; err != nil {
 		return nil, err
 	}

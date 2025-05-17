@@ -1,10 +1,13 @@
 package family
 
-import "cashback_info/internal/model/user"
+import (
+	"cashback_info/internal/model/user"
+
+	"github.com/google/uuid"
+)
 
 type Family struct {
-	ID      string      `json:"id" binding:"required"`
-	Title   string      `json:"title" binding:"required"`
-	Leader  user.User   `json:"leader" binding:"required"`
-	Members []user.User `json:"members" binding:"required"`
+	ID     uuid.UUID `json:"id" binding:"required"`
+	Title  string    `json:"title" binding:"required"`
+	Leader user.User `json:"leader" binding:"required"`
 }

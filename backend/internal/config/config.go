@@ -18,7 +18,12 @@ type Env string
 type Config struct {
 	Env        `env:"ENV" env-required:"true" validate:"required,oneof=local dev prod"`
 	Storage    `env-required:"true"`
+	JWT        `env-required:"true"`
 	HTTPServer `env-required:"false"`
+}
+
+type JWT struct {
+	SecretKey string `env:"JWT_SECRET_KEY" env-required:"true"`
 }
 
 type Storage struct {

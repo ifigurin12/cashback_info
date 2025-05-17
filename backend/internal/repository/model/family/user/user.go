@@ -1,13 +1,17 @@
 package user
 
-import "cashback_info/internal/repository/model/user"
+import (
+	"cashback_info/internal/repository/model/user"
 
-type FamilyUser struct {
-	FamilyID string    `gorm:"type:uuid;not null" json:"family_id"`
-	UserID   string    `gorm:"type:uuid;not null" json:"user_id"`
-	User     user.User `gorm:"foreignkey:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"user"`
+	"github.com/google/uuid"
+)
+
+type FamilyUserDB struct {
+	FamilyID uuid.UUID   `gorm:"type:uuid;not null" json:"family_id"`
+	UserID   uuid.UUID   `gorm:"type:uuid;not null" json:"user_id"`
+	User     user.UserDB `gorm:"foreignkey:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"user"`
 }
 
-func (FamilyUser) TableName() string {
+func (FamilyUserDB) TableName() string {
 	return "families_users"
 }

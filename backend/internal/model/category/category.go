@@ -3,10 +3,12 @@ package category
 import (
 	"cashback_info/internal/model/category/cashback"
 	"cashback_info/internal/model/mcc"
+
+	"github.com/google/uuid"
 )
 
 type Category struct {
-	ID          string    `json:"id" binding:"required"`
+	ID          uuid.UUID `json:"id" binding:"required"`
 	Title       string    `json:"title" binding:"required"`
 	Source      Source    `json:"source" binding:"required"`
 	MCCCodes    []mcc.MCC `json:"mcc_codes" binding:"required"`

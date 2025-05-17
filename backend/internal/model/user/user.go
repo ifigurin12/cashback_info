@@ -1,11 +1,22 @@
 package user
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
+type Token struct {
+	Token          string    `json:"token" binding:"required"`
+	ExpirationTime time.Time `json:"expiration_time" binding:"required"`
+}
+
 type User struct {
-	ID       string   `json:"id" binding:"required"`
-	Username string   `json:"username" binding:"required"`
-	Email    string   `json:"email" binding:"required"`
-	RoleType RoleType `json:"role_type" binding:"required"`
-	Phone    *string  `json:"phone,omitempty"`
+	ID       uuid.UUID `json:"id" binding:"required"`
+	Login    string    `json:"login" binding:"required"`
+	Email    string    `json:"email" binding:"required"`
+	RoleType RoleType  `json:"role_type" binding:"required"`
+	Phone    *string   `json:"phone,omitempty"`
 }
 
 type RoleType string

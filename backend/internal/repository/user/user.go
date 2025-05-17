@@ -3,14 +3,15 @@ package user
 import (
 	model "cashback_info/internal/repository/model/user"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type UserRepository interface {
-	GetByID(id string) (*model.User, error)
-	Create(user model.User) (*string, error)
-	Update(user model.User) error
-	Delete(id string) error
+	GetByID(id uuid.UUID) (*model.UserDB, error)
+	GetByEmail(email string) (*model.UserDB, error)
+	Create(user model.UserDB) (*uuid.UUID, error)
+	Delete(id uuid.UUID) error
 }
 
 type userRepository struct {
@@ -21,30 +22,31 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-func (r *userRepository) GetByID(id string) (*model.User, error) {
-	var user model.User
-	if err := r.db.First(&user, id).Error; err != nil {
+func (r *userRepository) GetByID(id uuid.UUID) (*model.UserDB, error) {
+	var user model.UserDB
+	if err := r.db.Where("id = ?", id).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *userRepository) Create(user model.User) (*string, error) {
+func (r *userRepository) GetByEmail(email string) (*model.UserDB, error) {
+	var user model.UserDB
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userRepository) Create(user model.UserDB) (*uuid.UUID, error) {
 	if err := r.db.Create(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user.ID, nil
 }
 
-func (r *userRepository) Update(user model.User) error {
-	if err := r.db.Save(&user).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *userRepository) Delete(id string) error {
-	if err := r.db.Delete(&model.User{}, id).Error; err != nil {
+func (r *userRepository) Delete(id uuid.UUID) error {
+	if err := r.db.Delete(&model.UserDB{}, id).Error; err != nil {
 		return err
 	}
 	return nil

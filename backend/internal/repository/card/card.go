@@ -4,14 +4,15 @@ import (
 	entity "cashback_info/internal/repository/model/card"
 	"errors"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type CardRepository interface {
-	Create(card entity.Card) error
-	ListByParams(userID string, page int, pageSize int) ([]entity.Card, error)
-	Update(card entity.Card) error
-	Delete(id string) error
+	Create(card entity.CardDB) error
+	List(userID uuid.UUID) ([]entity.CardDB, error)
+	Update(card entity.CardDB) error
+	Delete(id uuid.UUID) error
 }
 
 type cardRepository struct {
@@ -22,16 +23,16 @@ func NewCardRepository(db *gorm.DB) CardRepository {
 	return &cardRepository{db: db}
 }
 
-func (r *cardRepository) Create(card entity.Card) error {
+func (r *cardRepository) Create(card entity.CardDB) error {
 	if err := r.db.Create(&card).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *cardRepository) ListByParams(userID string, page int, pageSize int) ([]entity.Card, error) {
-	var cards []entity.Card
-	if err := r.db.Where("user_id = ?", userID).Find(&cards).Limit(pageSize).Offset((page - 1) * pageSize).Error; err != nil {
+func (r *cardRepository) List(userID uuid.UUID) ([]entity.CardDB, error) {
+	var cards []entity.CardDB
+	if err := r.db.Where("user_id = ?", userID).Find(&cards).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -41,15 +42,15 @@ func (r *cardRepository) ListByParams(userID string, page int, pageSize int) ([]
 	return cards, nil
 }
 
-func (r *cardRepository) Update(card entity.Card) error {
+func (r *cardRepository) Update(card entity.CardDB) error {
 	if err := r.db.Save(card).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *cardRepository) Delete(id string) error {
-	if err := r.db.Delete(&entity.Card{}, id).Error; err != nil {
+func (r *cardRepository) Delete(id uuid.UUID) error {
+	if err := r.db.Delete(&entity.CardDB{}, id).Error; err != nil {
 		return err
 	}
 	return nil

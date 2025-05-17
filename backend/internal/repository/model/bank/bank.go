@@ -1,10 +1,10 @@
 package bank
 
-type Bank struct {
-	ID   uint   `gorm:"primaryKey" json:"id"`
+type BankDB struct {
+	ID   int32  `gorm:"primaryKey" json:"id"`
 	Name string `gorm:"type:varchar(50);unique;not null" json:"name"`
 }
 
-func (b *Bank) TableName() string {
+func (b *BankDB) TableName() string {
 	return "banks"
 }

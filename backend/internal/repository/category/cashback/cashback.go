@@ -4,14 +4,15 @@ import (
 	model "cashback_info/internal/repository/model/category/cashback"
 	"errors"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type CategoryCashbackRepository interface {
-	Create(items []model.CategoryCashback) error
-	ListByParams(cardID string, page int, pageSize int) ([]model.CategoryCashback, error)
-	Update(categoryCashback model.CategoryCashback) error
-	Delete(cardID, categoryID string) error
+	Create(items []model.CategoryCashbackDB) error
+	List(cardIDs []uuid.UUID) ([]model.CategoryCashbackDB, error)
+	Update(categoryCashback model.CategoryCashbackDB) error
+	Delete(cardID, categoryID uuid.UUID) error
 }
 
 type categoryCashbackRepository struct {
@@ -22,16 +23,16 @@ func NewCategoryCashbackRepository(db *gorm.DB) CategoryCashbackRepository {
 	return &categoryCashbackRepository{db: db}
 }
 
-func (r *categoryCashbackRepository) Create(items []model.CategoryCashback) error {
+func (r *categoryCashbackRepository) Create(items []model.CategoryCashbackDB) error {
 	if err := r.db.Create(&items).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *categoryCashbackRepository) ListByParams(cardID string, page int, pageSize int) ([]model.CategoryCashback, error) {
-	var categoryCashbacks []model.CategoryCashback
-	if err := r.db.Where("card_id = ?", cardID).Find(&categoryCashbacks).Limit(pageSize).Offset((page - 1) * pageSize).Error; err != nil {
+func (r *categoryCashbackRepository) List(cardIDs []uuid.UUID) ([]model.CategoryCashbackDB, error) {
+	var categoryCashbacks []model.CategoryCashbackDB
+	if err := r.db.Where("card_id = ?", cardIDs).Find(&categoryCashbacks).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -40,15 +41,15 @@ func (r *categoryCashbackRepository) ListByParams(cardID string, page int, pageS
 	return categoryCashbacks, nil
 }
 
-func (r *categoryCashbackRepository) Update(categoryCashback model.CategoryCashback) error {
+func (r *categoryCashbackRepository) Update(categoryCashback model.CategoryCashbackDB) error {
 	if err := r.db.Save(categoryCashback).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *categoryCashbackRepository) Delete(cardID, categoryID string) error {
-	if err := r.db.Where("card_id = ? AND category_id = ?", cardID, categoryID).Delete(&model.CategoryCashback{}).Error; err != nil {
+func (r *categoryCashbackRepository) Delete(cardID, categoryID uuid.UUID) error {
+	if err := r.db.Where("card_id = ? AND category_id = ?", cardID, categoryID).Delete(&model.CategoryCashbackDB{}).Error; err != nil {
 		return err
 	}
 	return nil

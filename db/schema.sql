@@ -5,7 +5,7 @@ CREATE TYPE role_types AS ENUM ('default', 'admin');
 CREATE TABLE
     users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-        username VARCHAR(50) NOT NULL UNIQUE,
+        login VARCHAR(50) NOT NULL UNIQUE,
         email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(16) UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
@@ -13,21 +13,32 @@ CREATE TABLE
         date_created TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW ()
     );
 
-CREATE TABLE families (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(50) NOT NULL,
-    leader_id UUID NOT NULL,
-    date_created TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW (),
-    FOREIGN KEY (leader_id) REFERENCES users(id) ON UPDATE CASCADE
-);
+CREATE TABLE
+    families (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        title VARCHAR(50) NOT NULL,
+        leader_id UUID NOT NULL,
+        date_created TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW (),
+        FOREIGN KEY (leader_id) REFERENCES users (id) ON UPDATE CASCADE
+    );
 
-CREATE TABLE families_users (
-    user_id UUID NOT NULL,
-    family_id UUID NOT NULL,
-    PRIMARY KEY (user_id, family_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
-);
+CREATE TABLE
+    families_users (
+        user_id UUID NOT NULL,
+        family_id UUID NOT NULL,
+        PRIMARY KEY (user_id, family_id),
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (family_id) REFERENCES families (id) ON DELETE CASCADE
+    );
+
+CREATE TABLE
+    families_invites (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        family_id UUID NOT NULL,
+        user_id UUID NOT NULL,
+        FOREIGN KEY (family_id) REFERENCES families (id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    );
 
 CREATE TABLE
     banks (

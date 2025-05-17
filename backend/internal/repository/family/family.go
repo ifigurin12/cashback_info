@@ -3,13 +3,15 @@ package family
 import (
 	model "cashback_info/internal/repository/model/family"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type FamilyRepository interface {
-	Create(family model.Family) (*string, error)
-	GetByID(id string) (*model.Family, error)
-	Update(family model.Family) error
+	Create(family model.FamilyDB) (*uuid.UUID, error)
+	GetByID(id uuid.UUID) (*model.FamilyDB, error)
+	GetByLeaderID(leaderID uuid.UUID) (*model.FamilyDB, error)
+	Update(family model.FamilyDB) error
 	Delete(id string) error
 }
 
@@ -22,22 +24,30 @@ func NewFamilyRepository(db *gorm.DB) FamilyRepository {
 }
 
 // Create implements FamilyRepository.
-func (f *familyRepository) Create(family model.Family) (*string, error) {
+func (f *familyRepository) Create(family model.FamilyDB) (*uuid.UUID, error) {
 	if err := f.db.Create(&family).Error; err != nil {
 		return nil, err
 	}
 	return &family.ID, nil
 }
 
-func (f *familyRepository) GetByID(id string) (*model.Family, error) {
-	var family model.Family
+func (f *familyRepository) GetByID(id uuid.UUID) (*model.FamilyDB, error) {
+	var family model.FamilyDB
 	if err := f.db.Where("id = ?", id).First(&family).Error; err != nil {
 		return nil, err
 	}
 	return &family, nil
 }
 
-func (f *familyRepository) Update(family model.Family) error {
+func (f *familyRepository) GetByLeaderID(leaderID uuid.UUID) (*model.FamilyDB, error) {
+	var family model.FamilyDB
+	if err := f.db.Where("leader_id = ?", leaderID).First(&family).Error; err != nil {
+		return nil, err
+	}
+	return &family, nil
+}
+
+func (f *familyRepository) Update(family model.FamilyDB) error {
 	if err := f.db.Save(family).Error; err != nil {
 		return err
 	}
@@ -45,7 +55,7 @@ func (f *familyRepository) Update(family model.Family) error {
 }
 
 func (f *familyRepository) Delete(id string) error {
-	if err := f.db.Delete(&model.Family{}, id).Error; err != nil {
+	if err := f.db.Delete(&model.FamilyDB{}, id).Error; err != nil {
 		return err
 	}
 	return nil
