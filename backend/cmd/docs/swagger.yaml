@@ -1,4 +1,49 @@
 definitions:
+  api.CreateCardRequest:
+    properties:
+      bank_id:
+        type: integer
+      title:
+        type: string
+    required:
+    - bank_id
+    - title
+    type: object
+  api.CreateCardResponse:
+    properties:
+      card_id:
+        type: string
+    required:
+    - card_id
+    type: object
+  api.CreateCashbacksRequest:
+    properties:
+      cashbacks:
+        items:
+          $ref: '#/definitions/cashback.Cashback'
+        type: array
+      category_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - cashbacks
+    - category_ids
+    type: object
+  api.UpdateCashbacksRequest:
+    properties:
+      cashbacks:
+        items:
+          $ref: '#/definitions/cashback.Cashback'
+        type: array
+      category_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - cashbacks
+    - category_ids
+    type: object
   bank.Bank:
     properties:
       id:
@@ -8,6 +53,39 @@ definitions:
     required:
     - id
     - name
+    type: object
+  card.Card:
+    properties:
+      bank:
+        $ref: '#/definitions/bank.Bank'
+      categories:
+        items:
+          $ref: '#/definitions/category.CategoryWithCashback'
+        type: array
+      id:
+        type: string
+      last_updated_at:
+        type: string
+      title:
+        type: string
+    required:
+    - categories
+    - id
+    - last_updated_at
+    - title
+    type: object
+  cashback.Cashback:
+    properties:
+      cashback_limit:
+        type: integer
+      cashback_percentage:
+        type: number
+      end_date:
+        type: string
+      start_date:
+        type: string
+    required:
+    - cashback_percentage
     type: object
   category.Category:
     properties:
@@ -24,6 +102,35 @@ definitions:
       title:
         type: string
     required:
+    - id
+    - mcc_codes
+    - source
+    - title
+    type: object
+  category.CategoryWithCashback:
+    properties:
+      cashback_limit:
+        type: integer
+      cashback_percentage:
+        type: number
+      description:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      mcc_codes:
+        items:
+          $ref: '#/definitions/mcc.MCC'
+        type: array
+      source:
+        $ref: '#/definitions/category.Source'
+      start_date:
+        type: string
+      title:
+        type: string
+    required:
+    - cashback_percentage
     - id
     - mcc_codes
     - source
@@ -112,7 +219,6 @@ definitions:
     type: object
 info:
   contact: {}
-  description: Cashback-info API
   title: Cashback-info API
   version: "1.0"
 paths:
@@ -131,6 +237,99 @@ paths:
       summary: Получение списка банков
       tags:
       - Banks
+  /cards:
+    get:
+      description: Вернет список кард, по идентификатору пользователя из токена
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/card.Card'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Список карт пользователя
+      tags:
+      - cards
+    post:
+      consumes:
+      - application/json
+      description: Создает новую карту
+      parameters:
+      - description: Create Card Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateCardRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/api.CreateCardResponse'
+      security:
+      - BearerAuth: []
+      summary: "Создает новую карту\tпользователя"
+      tags:
+      - cards
+  /cards/{id}/cashback:
+    post:
+      consumes:
+      - application/json
+      description: Возвращает 201 в случае успеха
+      parameters:
+      - description: Card ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Create Cashbacks Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateCashbacksRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - BearerAuth: []
+      summary: Создание категорий для карты по ID
+      tags:
+      - cashback
+    put:
+      consumes:
+      - application/json
+      description: Возвращает данные пользователя по указанному ID
+      parameters:
+      - description: Card ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Create Cashbacks Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateCashbacksRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Обновление категорий для карты по ID
+      tags:
+      - cashback
   /categories:
     get:
       consumes:
@@ -217,4 +416,10 @@ paths:
       summary: Получение пользователя по ID
       tags:
       - User
+securityDefinitions:
+  BearerAuth:
+    description: Cashback-info API
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

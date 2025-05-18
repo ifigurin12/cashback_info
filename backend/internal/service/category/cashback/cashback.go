@@ -10,6 +10,7 @@ import (
 
 type CategoryCashbackService interface {
 	Create(cashbackItems []entity.Cashback, categoryIDs []uuid.UUID, cardID uuid.UUID) error
+	Delete(cardID uuid.UUID) error
 }
 
 type categoryCashbackService struct {
@@ -36,4 +37,8 @@ func (c *categoryCashbackService) Create(cashbackItems []entity.Cashback, catego
 	}
 
 	return c.repository.Create(itemsToCreate)
+}
+
+func (c *categoryCashbackService) Delete(cardID uuid.UUID) error {
+	return c.repository.Delete(cardID)
 }

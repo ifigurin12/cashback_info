@@ -9,7 +9,7 @@ import (
 )
 
 type CardRepository interface {
-	Create(card entity.CardDB) error
+	Create(card entity.CardDB) (*uuid.UUID, error)
 	List(userID uuid.UUID) ([]entity.CardDB, error)
 	Update(card entity.CardDB) error
 	Delete(id uuid.UUID) error
@@ -23,16 +23,16 @@ func NewCardRepository(db *gorm.DB) CardRepository {
 	return &cardRepository{db: db}
 }
 
-func (r *cardRepository) Create(card entity.CardDB) error {
+func (r *cardRepository) Create(card entity.CardDB) (*uuid.UUID, error) {
 	if err := r.db.Create(&card).Error; err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &card.ID, nil
 }
 
 func (r *cardRepository) List(userID uuid.UUID) ([]entity.CardDB, error) {
 	var cards []entity.CardDB
-	if err := r.db.Where("user_id = ?", userID).Find(&cards).Error; err != nil {
+	if err := r.db.Preload("Bank").Where("user_id = ?", userID).Find(&cards).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

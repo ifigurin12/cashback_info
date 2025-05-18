@@ -38,6 +38,155 @@ const docTemplate = `{
                 }
             }
         },
+        "/cards": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Вернет список кард, по идентификатору пользователя из токена",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cards"
+                ],
+                "summary": "Список карт пользователя",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/card.Card"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Создает новую карту",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cards"
+                ],
+                "summary": "Создает новую карту\tпользователя",
+                "parameters": [
+                    {
+                        "description": "Create Card Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateCardResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cards/{id}/cashback": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Возвращает данные пользователя по указанному ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cashback"
+                ],
+                "summary": "Обновление категорий для карты по ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Card ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create Cashbacks Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateCashbacksRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Возвращает 201 в случае успеха",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cashback"
+                ],
+                "summary": "Создание категорий для карты по ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Card ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create Cashbacks Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateCashbacksRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
         "/categories": {
             "get": {
                 "description": "Возвращает список категорий для указанного банка",
@@ -172,6 +321,74 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "api.CreateCardRequest": {
+            "type": "object",
+            "required": [
+                "bank_id",
+                "title"
+            ],
+            "properties": {
+                "bank_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.CreateCardResponse": {
+            "type": "object",
+            "required": [
+                "card_id"
+            ],
+            "properties": {
+                "card_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.CreateCashbacksRequest": {
+            "type": "object",
+            "required": [
+                "cashbacks",
+                "category_ids"
+            ],
+            "properties": {
+                "cashbacks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cashback.Cashback"
+                    }
+                },
+                "category_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "api.UpdateCashbacksRequest": {
+            "type": "object",
+            "required": [
+                "cashbacks",
+                "category_ids"
+            ],
+            "properties": {
+                "cashbacks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cashback.Cashback"
+                    }
+                },
+                "category_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "bank.Bank": {
             "type": "object",
             "required": [
@@ -183,6 +400,55 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "card.Card": {
+            "type": "object",
+            "required": [
+                "categories",
+                "id",
+                "last_updated_at",
+                "title"
+            ],
+            "properties": {
+                "bank": {
+                    "$ref": "#/definitions/bank.Bank"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/category.CategoryWithCashback"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_updated_at": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "cashback.Cashback": {
+            "type": "object",
+            "required": [
+                "cashback_percentage"
+            ],
+            "properties": {
+                "cashback_limit": {
+                    "type": "integer"
+                },
+                "cashback_percentage": {
+                    "type": "number"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "start_date": {
                     "type": "string"
                 }
             }
@@ -210,6 +476,48 @@ const docTemplate = `{
                 },
                 "source": {
                     "$ref": "#/definitions/category.Source"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "category.CategoryWithCashback": {
+            "type": "object",
+            "required": [
+                "cashback_percentage",
+                "id",
+                "mcc_codes",
+                "source",
+                "title"
+            ],
+            "properties": {
+                "cashback_limit": {
+                    "type": "integer"
+                },
+                "cashback_percentage": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mcc_codes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/mcc.MCC"
+                    }
+                },
+                "source": {
+                    "$ref": "#/definitions/category.Source"
+                },
+                "start_date": {
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"
@@ -334,6 +642,14 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Cashback-info API",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -344,7 +660,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Cashback-info API",
-	Description:      "Cashback-info API",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
