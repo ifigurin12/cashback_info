@@ -8,6 +8,7 @@ import (
 
 type Token struct {
 	Token          string    `json:"token" binding:"required"`
+	UserID         uuid.UUID `json:"user_id" binding:"required"`
 	ExpirationTime time.Time `json:"expiration_time" binding:"required"`
 }
 

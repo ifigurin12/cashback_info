@@ -40,11 +40,11 @@ func (h *authHandler) EmailAuth(c *gin.Context) {
 		return
 	}
 
-	token, expirationTime, err := h.authService.Login(request.Email, request.Password)
+	token, err := h.authService.Login(request.Email, request.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token, "expiration_time": expirationTime})
+	c.JSON(http.StatusOK, token)
 }

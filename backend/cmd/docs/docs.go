@@ -1021,13 +1021,17 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "expiration_time",
-                "token"
+                "token",
+                "user_id"
             ],
             "properties": {
                 "expiration_time": {
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
