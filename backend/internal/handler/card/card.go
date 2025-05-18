@@ -32,7 +32,7 @@ func (h *cardHandler) SetupRoutes(router *gin.Engine) {
 // @Summary Создает новую карту	пользователя
 // @Description Создает новую карту
 // @Security BearerAuth
-// @Tags cards
+// @Tags Card
 // @Accept json
 // @Produce json
 // @Param request body api.CreateCardRequest true "Create Card Request"
@@ -73,7 +73,7 @@ func (h *cardHandler) CreateCard(c *gin.Context) {
 // @Summary Список карт пользователя
 // @Description Вернет список кард, по идентификатору пользователя из токена
 // @Security BearerAuth
-// @Tags cards
+// @Tags Card
 // @Produce json
 // @Success 200 {array} card.Card
 // @Router /cards [get]
@@ -102,7 +102,7 @@ func (h *cardHandler) ListCards(c *gin.Context) {
 // @Summary Удалить карту по ID
 // @Description Удаляет карту
 // @Security BearerAuth
-// @Tags cards
+// @Tags Card
 // @Accept json
 // @Produce json
 // @Param id path string true "Card ID"

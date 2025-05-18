@@ -8,12 +8,15 @@ import (
 	categoryHandler "cashback_info/internal/handler/category"
 	cashbackHandler "cashback_info/internal/handler/category/cashback"
 	familyHandler "cashback_info/internal/handler/family"
+	familyInviteHandler "cashback_info/internal/handler/family/invite"
 	userHandler "cashback_info/internal/handler/user"
 	bankrepo "cashback_info/internal/repository/bank"
 	cardrepo "cashback_info/internal/repository/card"
 	categoryrepo "cashback_info/internal/repository/category"
 	cashbackrepo "cashback_info/internal/repository/category/cashback"
 	familyrepo "cashback_info/internal/repository/family"
+	familyinviterepo "cashback_info/internal/repository/family/invite"
+	familyuserrepo "cashback_info/internal/repository/family/user"
 	userrepo "cashback_info/internal/repository/user"
 	"cashback_info/internal/router"
 	authservice "cashback_info/internal/service/auth"
@@ -22,6 +25,8 @@ import (
 	categoryservice "cashback_info/internal/service/category"
 	cashbackservice "cashback_info/internal/service/category/cashback"
 	familyservice "cashback_info/internal/service/family"
+	familyinviteservice "cashback_info/internal/service/family/invite"
+	familyuserservice "cashback_info/internal/service/family/user"
 	"cashback_info/internal/service/password"
 	"cashback_info/internal/service/token"
 	userservice "cashback_info/internal/service/user"
@@ -59,6 +64,8 @@ func main() {
 	cashbackRepository := cashbackrepo.NewCategoryCashbackRepository(storage.DB())
 	cardRepository := cardrepo.NewCardRepository(storage.DB())
 	familyRepository := familyrepo.NewFamilyRepository(storage.DB())
+	familyUserRepository := familyuserrepo.NewFamilyUserRepository(storage.DB())
+	familyInviteRepository := familyinviterepo.NewFamilyInviteRepository(storage.DB())
 
 	tokenService := token.NewTokenServiceImpl(cfg.JWT.SecretKey)
 	passwordService := password.NewPasswordService()
@@ -70,6 +77,8 @@ func main() {
 	cashbackService := cashbackservice.NewCategoryCashbackService(cashbackRepository)
 	cardService := cardservice.NewCardService(cardRepository, cashbackRepository)
 	familyService := familyservice.NewFamilyService(familyRepository)
+	familyInviteService := familyinviteservice.NewFamilyInviteService(familyInviteRepository)
+	familyUserService := familyuserservice.NewFamilyUserService(familyUserRepository)
 
 	r := router.SetupRouter(tokenService)
 
@@ -79,7 +88,8 @@ func main() {
 	bankHandler.NewBankHandler(bankService).SetupRoutes(r)
 	cardHandler.NewCardHandler(cardService, cashbackService).SetupRoutes(r)
 	cashbackHandler.NewCashbackHandler(cashbackService, cardService).SetupRoutes(r)
-	familyHandler.NewFamilyHandler(familyService).SetupRoutes(r)
+	familyHandler.NewFamilyHandler(familyService, familyUserService).SetupRoutes(r)
+	familyInviteHandler.NewFamilyInviteHandler(familyInviteService, familyUserService, familyService).SetupRoutes(r)
 
 	r.Run()
 

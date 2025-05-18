@@ -12,6 +12,7 @@ type FamilyInviteRepository interface {
 	ListByFamilyID(familyID uuid.UUID) ([]invite.FamilyInviteDB, error)
 	ListByUserID(userID uuid.UUID) ([]invite.FamilyInviteDB, error)
 	DeleteByID(inviteID uuid.UUID) error
+	DeleteByUserID(userID uuid.UUID) error
 }
 
 type familyInviteRepository struct {
@@ -47,6 +48,13 @@ func (f *familyInviteRepository) ListByUserID(userID uuid.UUID) ([]invite.Family
 
 func (f *familyInviteRepository) DeleteByID(inviteID uuid.UUID) error {
 	if err := f.db.Delete(&invite.FamilyInviteDB{}, inviteID).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f *familyInviteRepository) DeleteByUserID(userID uuid.UUID) error {
+	if err := f.db.Where("user_id = ?", userID).Delete(&invite.FamilyInviteDB{}).Error; err != nil {
 		return err
 	}
 	return nil

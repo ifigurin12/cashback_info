@@ -12,7 +12,7 @@ type FamilyRepository interface {
 	GetByID(id uuid.UUID) (*model.FamilyDB, error)
 	GetByLeaderID(leaderID uuid.UUID) (*model.FamilyDB, error)
 	Update(family model.FamilyDB) error
-	Delete(id string) error
+	Delete(id uuid.UUID) error
 }
 
 type familyRepository struct {
@@ -53,7 +53,7 @@ func (f *familyRepository) Update(family model.FamilyDB) error {
 	return nil
 }
 
-func (f *familyRepository) Delete(id string) error {
+func (f *familyRepository) Delete(id uuid.UUID) error {
 	if err := f.db.Delete(&model.FamilyDB{}, id).Error; err != nil {
 		return err
 	}

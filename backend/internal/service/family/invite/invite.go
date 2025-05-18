@@ -1,47 +1,51 @@
 package invite
 
 import (
-	"cashback_info/internal/model/family"
-	"cashback_info/internal/model/family/invite"
+	entityfamily "cashback_info/internal/model/family"
+	entityinvite "cashback_info/internal/model/family/invite"
 	"cashback_info/internal/model/user"
-	repository "cashback_info/internal/repository/family/invite"
-	"context"
+	inviterepository "cashback_info/internal/repository/family/invite"
+	repoinvite "cashback_info/internal/repository/model/family/invite"
 	"fmt"
 
 	"github.com/google/uuid"
 )
 
 type FamilyInviteService interface {
-	ListByFamilyID(
-		ctx context.Context,
-		familyID uuid.UUID,
-	) ([]invite.FamilyInvite, error)
+	Create(familyID, userID uuid.UUID) error
+	ListByFamilyID(familyID uuid.UUID) ([]entityinvite.FamilyInvite, error)
+	ListByUserID(userID uuid.UUID) ([]entityinvite.FamilyInvite, error)
+	DeleteByID(ID uuid.UUID) error
+	DeleteByUserID(userID uuid.UUID) error
 }
 
 type familyInviteService struct {
-	repo repository.FamilyInviteRepository
+	familyInviteRepo inviterepository.FamilyInviteRepository
 }
 
-func NewFamilyInvitesService(repo repository.FamilyInviteRepository) *familyInviteService {
-	return &familyInviteService{repo: repo}
+func NewFamilyInviteService(repo inviterepository.FamilyInviteRepository) FamilyInviteService {
+	return &familyInviteService{familyInviteRepo: repo}
+}
+
+func (s *familyInviteService) Create(familyID, userID uuid.UUID) error {
+	return s.familyInviteRepo.Create(repoinvite.FamilyInviteDB{FamilyID: familyID, UserID: userID})
 }
 
 func (s *familyInviteService) ListByFamilyID(
-	ctx context.Context,
 	familyID uuid.UUID,
-) ([]invite.FamilyInvite, error) {
-	familyInvites, err := s.repo.ListByFamilyID(familyID)
+) ([]entityinvite.FamilyInvite, error) {
+	familyInvites, err := s.familyInviteRepo.ListByFamilyID(familyID)
 
-	result := make([]invite.FamilyInvite, len(familyInvites))
+	result := make([]entityinvite.FamilyInvite, len(familyInvites))
 	for i, familyInvite := range familyInvites {
 		leaderRoleType := user.GenerateRoleTypeFromString(string(familyInvite.Family.Leader.RoleType))
 		if leaderRoleType == nil {
 			return nil, fmt.Errorf("invalid role type: %s", familyInvite.Family.Leader.RoleType)
 		}
 
-		result[i] = invite.FamilyInvite{
+		result[i] = entityinvite.FamilyInvite{
 			ID: familyInvite.ID,
-			Family: family.Family{
+			Family: entityfamily.Family{
 				ID:    familyInvite.Family.ID,
 				Title: familyInvite.Family.Title,
 				Leader: user.User{
@@ -64,22 +68,19 @@ func (s *familyInviteService) ListByFamilyID(
 	return result, err
 }
 
-func (s *familyInviteService) ListByUserID(
-	ctx context.Context,
-	familyID uuid.UUID,
-) ([]invite.FamilyInvite, error) {
-	familyInvites, err := s.repo.ListByUserID(familyID)
+func (s *familyInviteService) ListByUserID(userID uuid.UUID) ([]entityinvite.FamilyInvite, error) {
+	familyInvites, err := s.familyInviteRepo.ListByUserID(userID)
 
-	result := make([]invite.FamilyInvite, len(familyInvites))
+	result := make([]entityinvite.FamilyInvite, len(familyInvites))
 	for i, familyInvite := range familyInvites {
 		leaderRoleType := user.GenerateRoleTypeFromString(string(familyInvite.Family.Leader.RoleType))
 		if leaderRoleType == nil {
 			return nil, fmt.Errorf("invalid role type: %s", familyInvite.Family.Leader.RoleType)
 		}
 
-		result[i] = invite.FamilyInvite{
+		result[i] = entityinvite.FamilyInvite{
 			ID: familyInvite.ID,
-			Family: family.Family{
+			Family: entityfamily.Family{
 				ID:    familyInvite.Family.ID,
 				Title: familyInvite.Family.Title,
 				Leader: user.User{
@@ -100,4 +101,12 @@ func (s *familyInviteService) ListByUserID(
 		}
 	}
 	return result, err
+}
+
+func (s *familyInviteService) DeleteByID(ID uuid.UUID) error {
+	return s.familyInviteRepo.DeleteByID(ID)
+}
+
+func (s *familyInviteService) DeleteByUserID(userID uuid.UUID) error {
+	return s.familyInviteRepo.DeleteByUserID(userID)
 }

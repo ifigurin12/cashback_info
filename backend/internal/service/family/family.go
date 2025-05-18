@@ -3,23 +3,29 @@ package family
 import (
 	familyentity "cashback_info/internal/model/family"
 	userentity "cashback_info/internal/model/user"
-	repository "cashback_info/internal/repository/family"
+	familyrepository "cashback_info/internal/repository/family"
+	userrepository "cashback_info/internal/repository/family/user"
 	repofamily "cashback_info/internal/repository/model/family"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type FamilyService interface {
 	CreateFamily(title string, userID uuid.UUID) error
 	GetFamilyByID(id uuid.UUID) (*familyentity.Family, error)
+	DeleteFamily(ID uuid.UUID) error
+	IsUserInFamily(userID uuid.UUID) (*bool, error)
 }
 
 type familyService struct {
-	familyRepo repository.FamilyRepository
+	familyRepo           familyrepository.FamilyRepository
+	familyUserRepository userrepository.FamilyUserRepository
 }
 
-func NewFamilyService(repo repository.FamilyRepository) FamilyService {
+func NewFamilyService(repo familyrepository.FamilyRepository) FamilyService {
 	return &familyService{familyRepo: repo}
 }
 
@@ -68,6 +74,37 @@ func (f *familyService) GetFamilyByID(id uuid.UUID) (*familyentity.Family, error
 			Phone:    member.Phone,
 			RoleType: *memberRoleType,
 		})
+	}
+
+	return &result, nil
+}
+
+func (f *familyService) DeleteFamily(ID uuid.UUID) error {
+	return f.familyRepo.Delete(ID)
+}
+
+func (f *familyService) IsUserInFamily(userID uuid.UUID) (*bool, error) {
+	family, err := f.familyRepo.GetByLeaderID(userID)
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+	}
+
+	familyUser, err := f.familyUserRepository.GetByUserID(userID)
+
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+	}
+	var result bool
+	if family != nil && family.Leader.ID == userID {
+		result = true
+	}
+
+	if familyUser != nil {
+		result = true
 	}
 
 	return &result, nil

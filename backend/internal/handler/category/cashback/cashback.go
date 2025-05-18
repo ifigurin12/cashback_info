@@ -32,7 +32,7 @@ func (h *cashbackHandler) SetupRoutes(router *gin.Engine) {
 // @Summary Создание категорий для карты по ID
 // @Description Возвращает 201 в случае успеха
 // @Security BearerAuth
-// @Tags cashback
+// @Tags Cashback
 // @Accept json
 // @Produce json
 // @Param id path string true "Card ID"
@@ -92,7 +92,7 @@ func (h *cashbackHandler) CreateCashbacks(c *gin.Context) {
 // @Summary Обновление категорий для карты по ID
 // @Description Возвращает данные пользователя по указанному ID
 // @Security BearerAuth
-// @Tags cashback
+// @Tags Cashback
 // @Accept json
 // @Produce json
 // @Param id path string true "Card ID"

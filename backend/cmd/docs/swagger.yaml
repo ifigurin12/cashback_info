@@ -278,7 +278,7 @@ paths:
       - BearerAuth: []
       summary: Список карт пользователя
       tags:
-      - cards
+      - Card
     post:
       consumes:
       - application/json
@@ -301,7 +301,7 @@ paths:
       - BearerAuth: []
       summary: "Создает новую карту\tпользователя"
       tags:
-      - cards
+      - Card
   /cards/:id:
     delete:
       consumes:
@@ -322,7 +322,7 @@ paths:
       - BearerAuth: []
       summary: Удалить карту по ID
       tags:
-      - cards
+      - Card
   /cards/{id}/cashback:
     post:
       consumes:
@@ -349,7 +349,7 @@ paths:
       - BearerAuth: []
       summary: Создание категорий для карты по ID
       tags:
-      - cashback
+      - Cashback
     put:
       consumes:
       - application/json
@@ -375,7 +375,7 @@ paths:
       - BearerAuth: []
       summary: Обновление категорий для карты по ID
       tags:
-      - cashback
+      - Cashback
   /categories:
     get:
       consumes:
@@ -444,8 +444,117 @@ paths:
       - BearerAuth: []
       summary: Создание семьи
       tags:
-      - family
-  /families/{id}:
+      - Family
+  /families/:family-id/invites/:invite-id:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление приглашения, будет успешным только для лидера семьи
+      parameters:
+      - description: Family ID
+        in: path
+        name: family-id
+        required: true
+        type: string
+      - description: Invite ID
+        in: path
+        name: invite-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Удаление приглашения
+      tags:
+      - Family-Invite
+  /families/:id/invites:
+    post:
+      consumes:
+      - application/json
+      description: Создание приглашения в семью
+      parameters:
+      - description: Family ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - BearerAuth: []
+      summary: Создание приглашения в семью
+      tags:
+      - Family-Invite
+  /families/:id/invites/accept:
+    post:
+      consumes:
+      - application/json
+      description: Принятие приглашения добавляет юзера в семью
+      parameters:
+      - description: Family ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Принятие приглашения
+      tags:
+      - Family-Invite
+  /families/:id/invites/decline:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет приглашение
+      parameters:
+      - description: Family ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Отклонение приглашения
+      tags:
+      - Family-Invite
+  /families/{family-id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление семьи по id
+      parameters:
+      - description: Family ID
+        in: path
+        name: family-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Удаление семьи
+      tags:
+      - Family
     get:
       consumes:
       - application/json
@@ -453,7 +562,7 @@ paths:
       parameters:
       - description: Family ID
         in: path
-        name: id
+        name: family-id
         required: true
         type: string
       produces:
@@ -467,7 +576,54 @@ paths:
       - BearerAuth: []
       summary: Получение семьи
       tags:
-      - family
+      - Family
+  /families/{family-id}/members/{member-id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление члена семьи по id
+      parameters:
+      - description: Family ID
+        in: path
+        name: family-id
+        required: true
+        type: string
+      - description: Member ID
+        in: path
+        name: member-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Удаление члена семьи
+      tags:
+      - Family
+  /families/invites:
+    get:
+      consumes:
+      - application/json
+      description: Получение приглашений либо по family-id либо по id из Authorization
+        header
+      parameters:
+      - description: Family ID
+        in: query
+        name: family-id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Получение приглашений
+      tags:
+      - Family-Invite
   /users:
     post:
       consumes:
