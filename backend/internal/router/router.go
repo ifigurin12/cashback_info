@@ -28,13 +28,11 @@ func AuthMiddleware(tokenService tokenservice.TokenService) gin.HandlerFunc {
 		var userID uuid.UUID
 
 		if authHeader == "" {
-			// Если заголовок отсутствует, просто продолжаем выполнение
 			c.Next()
 			return
 		}
 
 		if !strings.HasPrefix(authHeader, "Bearer ") {
-			// Если заголовок не начинается с Bearer, также продолжаем выполнение
 			c.Next()
 			return
 		}

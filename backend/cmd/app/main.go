@@ -7,11 +7,13 @@ import (
 	cardHandler "cashback_info/internal/handler/card"
 	categoryHandler "cashback_info/internal/handler/category"
 	cashbackHandler "cashback_info/internal/handler/category/cashback"
+	familyHandler "cashback_info/internal/handler/family"
 	userHandler "cashback_info/internal/handler/user"
 	bankrepo "cashback_info/internal/repository/bank"
 	cardrepo "cashback_info/internal/repository/card"
 	categoryrepo "cashback_info/internal/repository/category"
 	cashbackrepo "cashback_info/internal/repository/category/cashback"
+	familyrepo "cashback_info/internal/repository/family"
 	userrepo "cashback_info/internal/repository/user"
 	"cashback_info/internal/router"
 	authservice "cashback_info/internal/service/auth"
@@ -19,6 +21,7 @@ import (
 	cardservice "cashback_info/internal/service/card"
 	categoryservice "cashback_info/internal/service/category"
 	cashbackservice "cashback_info/internal/service/category/cashback"
+	familyservice "cashback_info/internal/service/family"
 	"cashback_info/internal/service/password"
 	"cashback_info/internal/service/token"
 	userservice "cashback_info/internal/service/user"
@@ -55,6 +58,7 @@ func main() {
 	bankRepository := bankrepo.NewBankRepository(storage.DB())
 	cashbackRepository := cashbackrepo.NewCategoryCashbackRepository(storage.DB())
 	cardRepository := cardrepo.NewCardRepository(storage.DB())
+	familyRepository := familyrepo.NewFamilyRepository(storage.DB())
 
 	tokenService := token.NewTokenServiceImpl(cfg.JWT.SecretKey)
 	passwordService := password.NewPasswordService()
@@ -65,6 +69,7 @@ func main() {
 	authService := authservice.NewAuthService(userRepository, tokenService, passwordService)
 	cashbackService := cashbackservice.NewCategoryCashbackService(cashbackRepository)
 	cardService := cardservice.NewCardService(cardRepository, cashbackRepository)
+	familyService := familyservice.NewFamilyService(familyRepository)
 
 	r := router.SetupRouter(tokenService)
 
@@ -72,8 +77,9 @@ func main() {
 	authHandler.NewAuthHandler(authService).SetupRoutes(r)
 	categoryHandler.NewCategoryHandler(categoryservice).SetupRoutes(r)
 	bankHandler.NewBankHandler(bankService).SetupRoutes(r)
-	cardHandler.NewCardHandler(cardService).SetupRoutes(r)
+	cardHandler.NewCardHandler(cardService, cashbackService).SetupRoutes(r)
 	cashbackHandler.NewCashbackHandler(cashbackService, cardService).SetupRoutes(r)
+	familyHandler.NewFamilyHandler(familyService).SetupRoutes(r)
 
 	r.Run()
 

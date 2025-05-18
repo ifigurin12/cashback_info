@@ -103,6 +103,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/cards/:id": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Удаляет карту",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cards"
+                ],
+                "summary": "Удалить карту по ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Card ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
         "/cards/{id}/cashback": {
             "put": {
                 "security": [
@@ -256,6 +290,82 @@ const docTemplate = `{
                 }
             }
         },
+        "/families": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Создание семьи",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "family"
+                ],
+                "summary": "Создание семьи",
+                "parameters": [
+                    {
+                        "description": "Create family Request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateFamilyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/family.Family"
+                        }
+                    }
+                }
+            }
+        },
+        "/families/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Получение семьи по id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "family"
+                ],
+                "summary": "Получение семьи",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Family ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/family.Family"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "description": "Создает нового пользователя и возвращает код",
@@ -365,6 +475,17 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "api.CreateFamilyRequest": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -534,6 +655,32 @@ const docTemplate = `{
                 "SourceUser",
                 "SourceBank"
             ]
+        },
+        "family.Family": {
+            "type": "object",
+            "required": [
+                "id",
+                "leader",
+                "members",
+                "title"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "leader": {
+                    "$ref": "#/definitions/user.User"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.User"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
         },
         "mcc.MCC": {
             "type": "object",

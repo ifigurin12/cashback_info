@@ -30,6 +30,13 @@ definitions:
     - cashbacks
     - category_ids
     type: object
+  api.CreateFamilyRequest:
+    properties:
+      title:
+        type: string
+    required:
+    - title
+    type: object
   api.UpdateCashbacksRequest:
     properties:
       cashbacks:
@@ -144,6 +151,24 @@ definitions:
     x-enum-varnames:
     - SourceUser
     - SourceBank
+  family.Family:
+    properties:
+      id:
+        type: string
+      leader:
+        $ref: '#/definitions/user.User'
+      members:
+        items:
+          $ref: '#/definitions/user.User'
+        type: array
+      title:
+        type: string
+    required:
+    - id
+    - leader
+    - members
+    - title
+    type: object
   mcc.MCC:
     properties:
       description:
@@ -277,6 +302,27 @@ paths:
       summary: "Создает новую карту\tпользователя"
       tags:
       - cards
+  /cards/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет карту
+      parameters:
+      - description: Card ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Удалить карту по ID
+      tags:
+      - cards
   /cards/{id}/cashback:
     post:
       consumes:
@@ -375,6 +421,53 @@ paths:
       summary: Аутентификация пользователя по электронной почте
       tags:
       - Auth
+  /families:
+    post:
+      consumes:
+      - application/json
+      description: Создание семьи
+      parameters:
+      - description: Create family Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateFamilyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/family.Family'
+      security:
+      - BearerAuth: []
+      summary: Создание семьи
+      tags:
+      - family
+  /families/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Получение семьи по id
+      parameters:
+      - description: Family ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/family.Family'
+      security:
+      - BearerAuth: []
+      summary: Получение семьи
+      tags:
+      - family
   /users:
     post:
       consumes:

@@ -21,6 +21,7 @@ type CreateCardArgs struct {
 type CardService interface {
 	ListCards(userID uuid.UUID) ([]card.Card, error)
 	CreateCard(args CreateCardArgs) (*uuid.UUID, error)
+	DeleteCard(cardID uuid.UUID) error
 	IsCardOwnedByUserID(cardID, userID uuid.UUID) (*bool, error)
 }
 
@@ -95,6 +96,10 @@ func (c *cardService) ListCards(userID uuid.UUID) ([]card.Card, error) {
 	}
 
 	return result, nil
+}
+
+func (c *cardService) DeleteCard(cardID uuid.UUID) error {
+	return c.cardRepo.Delete(cardID)
 }
 
 func (c *cardService) IsCardOwnedByUserID(cardID, userID uuid.UUID) (*bool, error) {

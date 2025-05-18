@@ -23,7 +23,6 @@ func NewFamilyRepository(db *gorm.DB) FamilyRepository {
 	return &familyRepository{db: db}
 }
 
-// Create implements FamilyRepository.
 func (f *familyRepository) Create(family model.FamilyDB) (*uuid.UUID, error) {
 	if err := f.db.Create(&family).Error; err != nil {
 		return nil, err
@@ -33,7 +32,7 @@ func (f *familyRepository) Create(family model.FamilyDB) (*uuid.UUID, error) {
 
 func (f *familyRepository) GetByID(id uuid.UUID) (*model.FamilyDB, error) {
 	var family model.FamilyDB
-	if err := f.db.Where("id = ?", id).First(&family).Error; err != nil {
+	if err := f.db.Preload("Members").Preload("Leader").Where("id = ?", id).First(&family).Error; err != nil {
 		return nil, err
 	}
 	return &family, nil
