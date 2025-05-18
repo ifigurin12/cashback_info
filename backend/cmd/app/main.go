@@ -76,7 +76,7 @@ func main() {
 	authService := authservice.NewAuthService(userRepository, tokenService, passwordService)
 	cashbackService := cashbackservice.NewCategoryCashbackService(cashbackRepository)
 	cardService := cardservice.NewCardService(cardRepository, cashbackRepository)
-	familyService := familyservice.NewFamilyService(familyRepository)
+	familyService := familyservice.NewFamilyService(familyRepository, familyUserRepository)
 	familyInviteService := familyinviteservice.NewFamilyInviteService(familyInviteRepository)
 	familyUserService := familyuserservice.NewFamilyUserService(familyUserRepository)
 

@@ -150,7 +150,7 @@ func (h *familyHandler) DeleteFamilyMember(c *gin.Context) {
 	memberIDStr := c.Param("member-id")
 	memberID, err := uuid.Parse(memberIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid family ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid member ID"})
 		return
 	}
 
@@ -159,10 +159,8 @@ func (h *familyHandler) DeleteFamilyMember(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	isUserInFamily := family.IsUserInFamily(userIDUUID)
-	if !isUserInFamily {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User is not in family"})
+	if family.Leader.ID != userIDUUID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "User is not the leader"})
 		return
 	}
 

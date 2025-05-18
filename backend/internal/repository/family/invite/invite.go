@@ -32,7 +32,7 @@ func (f *familyInviteRepository) Create(invite invite.FamilyInviteDB) error {
 
 func (f *familyInviteRepository) ListByFamilyID(familyID uuid.UUID) ([]invite.FamilyInviteDB, error) {
 	var invites []invite.FamilyInviteDB
-	if err := f.db.Where("family_id = ?", familyID).Find(&invites).Error; err != nil {
+	if err := f.db.Preload("User").Preload("Family").Preload("Family.Leader").Preload("Family.Members").Where("family_id = ?", familyID).Find(&invites).Error; err != nil {
 		return nil, err
 	}
 	return invites, nil

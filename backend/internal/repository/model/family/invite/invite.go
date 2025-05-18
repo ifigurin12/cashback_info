@@ -14,3 +14,7 @@ type FamilyInviteDB struct {
 	Family   family.FamilyDB `gorm:"foreignKey:family_id;references:ID;constraint:OnDelete:CASCADE;"`
 	User     user.User       `gorm:"foreignKey:user_id;references:ID;constraint:OnDelete:CASCADE;"`
 }
+
+func (FamilyInviteDB) TableName() string {
+	return "families_invites"
+}

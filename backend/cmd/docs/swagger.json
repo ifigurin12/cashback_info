@@ -320,149 +320,6 @@
                 }
             }
         },
-        "/families/:family-id/invites/:invite-id": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Удаление приглашения, будет успешным только для лидера семьи",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Family-Invite"
-                ],
-                "summary": "Удаление приглашения",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Family ID",
-                        "name": "family-id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Invite ID",
-                        "name": "invite-id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    }
-                }
-            }
-        },
-        "/families/:id/invites": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Создание приглашения в семью",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Family-Invite"
-                ],
-                "summary": "Создание приглашения в семью",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Family ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    }
-                }
-            }
-        },
-        "/families/:id/invites/accept": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Принятие приглашения добавляет юзера в семью",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Family-Invite"
-                ],
-                "summary": "Принятие приглашения",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Family ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    }
-                }
-            }
-        },
-        "/families/:id/invites/decline": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Удаляет приглашение",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Family-Invite"
-                ],
-                "summary": "Отклонение приглашения",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Family ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    }
-                }
-            }
-        },
         "/families/invites": {
             "get": {
                 "security": [
@@ -554,6 +411,158 @@
                         "type": "string",
                         "description": "Family ID",
                         "name": "family-id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/families/{family-id}/invites": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Создание приглашения в семью",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Family-Invite"
+                ],
+                "summary": "Создание приглашения в семью",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateFamilyInviteRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Family ID",
+                        "name": "family-id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/families/{family-id}/invites/accept": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Принятие приглашения добавляет юзера в семью",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Family-Invite"
+                ],
+                "summary": "Принятие приглашения",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Family ID",
+                        "name": "family-id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/families/{family-id}/invites/decline": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Удаляет приглашение",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Family-Invite"
+                ],
+                "summary": "Отклонение приглашения",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Family ID",
+                        "name": "family-id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/families/{family-id}/invites/{invite-id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Удаление приглашения, будет успешным только для лидера семьи",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Family-Invite"
+                ],
+                "summary": "Удаление приглашения",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Family ID",
+                        "name": "family-id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Invite ID",
+                        "name": "invite-id",
                         "in": "path",
                         "required": true
                     }
@@ -715,6 +724,17 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "api.CreateFamilyInviteRequest": {
+            "type": "object",
+            "required": [
+                "invitee_id"
+            ],
+            "properties": {
+                "invitee_id": {
+                    "type": "string"
                 }
             }
         },

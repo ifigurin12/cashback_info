@@ -25,8 +25,8 @@ type familyService struct {
 	familyUserRepository userrepository.FamilyUserRepository
 }
 
-func NewFamilyService(repo familyrepository.FamilyRepository) FamilyService {
-	return &familyService{familyRepo: repo}
+func NewFamilyService(familyRepo familyrepository.FamilyRepository, familyUserRepository userrepository.FamilyUserRepository) FamilyService {
+	return &familyService{familyRepo: familyRepo, familyUserRepository: familyUserRepository}
 }
 
 func (f *familyService) CreateFamily(title string, userID uuid.UUID) error {

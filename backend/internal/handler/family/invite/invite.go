@@ -1,6 +1,7 @@
 package invite
 
 import (
+	"cashback_info/internal/handler/family/invite/api"
 	familyservice "cashback_info/internal/service/family"
 	inviteservice "cashback_info/internal/service/family/invite"
 	familyuserservice "cashback_info/internal/service/family/user"
@@ -40,9 +41,10 @@ func (f *familyInviteHandler) SetupRoutes(router *gin.Engine) {
 // @Tags Family-Invite
 // @Accept json
 // @Produce json
-// @Param id path string true "Family ID"
+// @Param request body api.CreateFamilyInviteRequest true "Request body"
+// @Param family-id path string true "Family ID"
 // @Success 201
-// @Router /families/:id/invites [post]
+// @Router /families/{family-id}/invites [post]
 func (f *familyInviteHandler) CreateFamilyInvite(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
@@ -55,10 +57,16 @@ func (f *familyInviteHandler) CreateFamilyInvite(c *gin.Context) {
 		return
 	}
 
-	familyIDStr := c.Param("id")
+	familyIDStr := c.Param("family-id")
 	familyID, err := uuid.Parse(familyIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid family ID"})
+		return
+	}
+
+	var request api.CreateFamilyInviteRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -72,7 +80,30 @@ func (f *familyInviteHandler) CreateFamilyInvite(c *gin.Context) {
 		return
 	}
 
-	err = f.familyInviteService.Create(familyID, userIDUUID)
+	isUserInFamily, err := f.familyService.IsUserInFamily(request.InviteeID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if *isUserInFamily {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User already in family"})
+		return
+	}
+
+	invites, err := f.familyInviteService.ListByFamilyID(familyID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	for _, invite := range invites {
+		if invite.User.ID == request.InviteeID {
+			c.JSON(http.StatusConflict, gin.H{"error": "User already invited"})
+			return
+		}
+	}
+
+	err = f.familyInviteService.Create(familyID, request.InviteeID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -150,7 +181,7 @@ func (f *familyInviteHandler) GetFamilyInvite(c *gin.Context) {
 // @Param family-id path string true "Family ID"
 // @Param invite-id path string true "Invite ID"
 // @Success 204
-// @Router /families/:family-id/invites/:invite-id [delete]
+// @Router /families/{family-id}/invites/{invite-id} [delete]
 func (f *familyInviteHandler) DeleteFamilyInvite(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
@@ -203,9 +234,9 @@ func (f *familyInviteHandler) DeleteFamilyInvite(c *gin.Context) {
 // @Tags Family-Invite
 // @Accept json
 // @Produce json
-// @Param id path string true "Family ID"
+// @Param family-id path string true "Family ID"
 // @Success 204
-// @Router /families/:id/invites/accept [post]
+// @Router /families/{family-id}/invites/accept [post]
 func (f *familyInviteHandler) AcceptFamilyInvite(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
@@ -266,9 +297,9 @@ func (f *familyInviteHandler) AcceptFamilyInvite(c *gin.Context) {
 // @Tags Family-Invite
 // @Accept json
 // @Produce json
-// @Param id path string true "Family ID"
+// @Param family-id path string true "Family ID"
 // @Success 204
-// @Router /families/:id/invites/decline [delete]
+// @Router /families/{family-id}/invites/decline [delete]
 func (f *familyInviteHandler) DeclineFamilyInvite(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {

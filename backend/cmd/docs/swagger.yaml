@@ -30,6 +30,13 @@ definitions:
     - cashbacks
     - category_ids
     type: object
+  api.CreateFamilyInviteRequest:
+    properties:
+      invitee_id:
+        type: string
+    required:
+    - invitee_id
+    type: object
   api.CreateFamilyRequest:
     properties:
       title:
@@ -445,95 +452,6 @@ paths:
       summary: Создание семьи
       tags:
       - Family
-  /families/:family-id/invites/:invite-id:
-    delete:
-      consumes:
-      - application/json
-      description: Удаление приглашения, будет успешным только для лидера семьи
-      parameters:
-      - description: Family ID
-        in: path
-        name: family-id
-        required: true
-        type: string
-      - description: Invite ID
-        in: path
-        name: invite-id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      security:
-      - BearerAuth: []
-      summary: Удаление приглашения
-      tags:
-      - Family-Invite
-  /families/:id/invites:
-    post:
-      consumes:
-      - application/json
-      description: Создание приглашения в семью
-      parameters:
-      - description: Family ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-      security:
-      - BearerAuth: []
-      summary: Создание приглашения в семью
-      tags:
-      - Family-Invite
-  /families/:id/invites/accept:
-    post:
-      consumes:
-      - application/json
-      description: Принятие приглашения добавляет юзера в семью
-      parameters:
-      - description: Family ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      security:
-      - BearerAuth: []
-      summary: Принятие приглашения
-      tags:
-      - Family-Invite
-  /families/:id/invites/decline:
-    delete:
-      consumes:
-      - application/json
-      description: Удаляет приглашение
-      parameters:
-      - description: Family ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      security:
-      - BearerAuth: []
-      summary: Отклонение приглашения
-      tags:
-      - Family-Invite
   /families/{family-id}:
     delete:
       consumes:
@@ -577,6 +495,101 @@ paths:
       summary: Получение семьи
       tags:
       - Family
+  /families/{family-id}/invites:
+    post:
+      consumes:
+      - application/json
+      description: Создание приглашения в семью
+      parameters:
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateFamilyInviteRequest'
+      - description: Family ID
+        in: path
+        name: family-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - BearerAuth: []
+      summary: Создание приглашения в семью
+      tags:
+      - Family-Invite
+  /families/{family-id}/invites/{invite-id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление приглашения, будет успешным только для лидера семьи
+      parameters:
+      - description: Family ID
+        in: path
+        name: family-id
+        required: true
+        type: string
+      - description: Invite ID
+        in: path
+        name: invite-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Удаление приглашения
+      tags:
+      - Family-Invite
+  /families/{family-id}/invites/accept:
+    post:
+      consumes:
+      - application/json
+      description: Принятие приглашения добавляет юзера в семью
+      parameters:
+      - description: Family ID
+        in: path
+        name: family-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Принятие приглашения
+      tags:
+      - Family-Invite
+  /families/{family-id}/invites/decline:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет приглашение
+      parameters:
+      - description: Family ID
+        in: path
+        name: family-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Отклонение приглашения
+      tags:
+      - Family-Invite
   /families/{family-id}/members/{member-id}:
     delete:
       consumes:
