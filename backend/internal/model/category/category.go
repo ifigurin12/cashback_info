@@ -16,8 +16,8 @@ type Category struct {
 }
 
 type CategoryWithCashback struct {
-	Category
-	cashback.Cashback
+	Category Category          `json:"category" binding:"required"`
+	Cashback cashback.Cashback `json:"cashback" binding:"required"`
 }
 
 type Source string

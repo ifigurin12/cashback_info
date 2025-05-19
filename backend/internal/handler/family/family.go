@@ -25,7 +25,7 @@ func NewFamilyHandler(familyService familyservice.FamilyService, familyUserServi
 
 func (f *familyHandler) SetupRoutes(router *gin.Engine) {
 	router.POST("/families", f.CreateFamily)
-	router.GET("/families/:family-id", f.GetFamily)
+	router.GET("/families", f.GetFamily)
 	router.DELETE("/families/:family-id", f.DeleteFamily)
 	router.DELETE("/families/:family-id/members/:member-id", f.DeleteFamilyMember)
 }
@@ -58,9 +58,13 @@ func (f *familyHandler) CreateFamily(c *gin.Context) {
 		return
 	}
 
-	isUserInFamily, err := f.familyService.IsUserInFamily(userIDUUID)
-	if isUserInFamily != nil && *isUserInFamily {
-		c.JSON(http.StatusConflict, gin.H{"error": "User is already in a family"})
+	userFamily, err := f.familyService.GetFamilyByUserID(userIDUUID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if userFamily != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User is already in family"})
 		return
 	}
 
@@ -76,13 +80,13 @@ func (f *familyHandler) CreateFamily(c *gin.Context) {
 // GetFamily godoc
 // @Summary Получение семьи
 // @Security BearerAuth
-// @Description Получение семьи по id
+// @Description Получение семьи по id из Authorization header или family id
 // @Tags Family
 // @Accept json
 // @Produce json
-// @Param family-id path string true "Family ID"
+// @Param family-id query string false "Family ID"
 // @Success 200 {object} family.Family
-// @Router /families/{family-id} [get]
+// @Router /families [get]
 func (h *familyHandler) GetFamily(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
@@ -95,26 +99,39 @@ func (h *familyHandler) GetFamily(c *gin.Context) {
 		return
 	}
 
-	familyIDStr := c.Param("family-id")
-	familyID, err := uuid.Parse(familyIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid family ID"})
+	familyIDStr := c.Query("family-id")
+	if familyIDStr != "" {
+		familyID, err := uuid.Parse(familyIDStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid family ID"})
+			return
+		}
+
+		family, err := h.familyService.GetFamilyByID(familyID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		isUserInFamily := family.IsUserInFamily(userIDUUID)
+		if !isUserInFamily {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User is not in family"})
+			return
+		}
+
+		c.JSON(http.StatusOK, family)
+		return
+	} else {
+		userFamily, err := h.familyService.GetFamilyByUserID(userIDUUID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, userFamily)
 		return
 	}
 
-	family, err := h.familyService.GetFamilyByID(familyID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	isUserInFamily := family.IsUserInFamily(userIDUUID)
-	if !isUserInFamily {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User is not in family"})
-		return
-	}
-
-	c.JSON(http.StatusOK, family)
 }
 
 // DeleteFamilyMember godoc

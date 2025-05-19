@@ -80,12 +80,12 @@ func (f *familyInviteHandler) CreateFamilyInvite(c *gin.Context) {
 		return
 	}
 
-	isUserInFamily, err := f.familyService.IsUserInFamily(request.InviteeID)
+	userFamily, err := f.familyService.GetFamilyByUserID(request.InviteeID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if *isUserInFamily {
+	if userFamily != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User already in family"})
 		return
 	}
@@ -120,7 +120,7 @@ func (f *familyInviteHandler) CreateFamilyInvite(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param family-id query string false "Family ID"
-// @Success 204
+// @Success 200 {array} invite.FamilyInvite
 // @Router /families/invites [get]
 func (f *familyInviteHandler) GetFamilyInvite(c *gin.Context) {
 	userID, exists := c.Get("userID")

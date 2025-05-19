@@ -86,7 +86,7 @@ func main() {
 	authHandler.NewAuthHandler(authService).SetupRoutes(r)
 	categoryHandler.NewCategoryHandler(categoryservice).SetupRoutes(r)
 	bankHandler.NewBankHandler(bankService).SetupRoutes(r)
-	cardHandler.NewCardHandler(cardService, cashbackService).SetupRoutes(r)
+	cardHandler.NewCardHandler(cardService, cashbackService, familyService).SetupRoutes(r)
 	cashbackHandler.NewCashbackHandler(cashbackService, cardService).SetupRoutes(r)
 	familyHandler.NewFamilyHandler(familyService, familyUserService).SetupRoutes(r)
 	familyInviteHandler.NewFamilyInviteHandler(familyInviteService, familyUserService, familyService).SetupRoutes(r)

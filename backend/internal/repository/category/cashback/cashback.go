@@ -32,7 +32,7 @@ func (r *categoryCashbackRepository) Create(items []model.CategoryCashbackDB) er
 
 func (r *categoryCashbackRepository) List(cardIDs []uuid.UUID) ([]model.CategoryCashbackDB, error) {
 	var categoryCashbacks []model.CategoryCashbackDB
-	if err := r.db.Where("card_id = ?", cardIDs).Find(&categoryCashbacks).Error; err != nil {
+	if err := r.db.Preload("Category").Where("card_id IN ?", cardIDs).Find(&categoryCashbacks).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

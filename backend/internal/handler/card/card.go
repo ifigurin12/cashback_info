@@ -2,8 +2,10 @@ package card
 
 import (
 	"cashback_info/internal/handler/card/api"
+	entitycard "cashback_info/internal/model/card"
 	cardservice "cashback_info/internal/service/card"
 	cashbackservice "cashback_info/internal/service/category/cashback"
+	familyservice "cashback_info/internal/service/family"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,15 +19,17 @@ type CardHandler interface {
 type cardHandler struct {
 	cardService             cardservice.CardService
 	categoryCashbackService cashbackservice.CategoryCashbackService
+	familyService           familyservice.FamilyService
 }
 
-func NewCardHandler(cardService cardservice.CardService, categoryCashbackService cashbackservice.CategoryCashbackService) CardHandler {
-	return &cardHandler{cardService: cardService, categoryCashbackService: categoryCashbackService}
+func NewCardHandler(cardService cardservice.CardService, categoryCashbackService cashbackservice.CategoryCashbackService, familyService familyservice.FamilyService) CardHandler {
+	return &cardHandler{cardService: cardService, categoryCashbackService: categoryCashbackService, familyService: familyService}
 }
 
 func (h *cardHandler) SetupRoutes(router *gin.Engine) {
 	router.POST("/cards", h.CreateCard)
 	router.GET("/cards", h.ListCards)
+	router.DELETE("/cards/:id", h.DeleteCard)
 }
 
 // CreateCard godoc
@@ -75,7 +79,7 @@ func (h *cardHandler) CreateCard(c *gin.Context) {
 // @Security BearerAuth
 // @Tags Card
 // @Produce json
-// @Success 200 {array} card.Card
+// @Success 200 {object} api.ListCardsResponse
 // @Router /cards [get]
 func (h *cardHandler) ListCards(c *gin.Context) {
 	userID, exists := c.Get("userID")
@@ -89,13 +93,31 @@ func (h *cardHandler) ListCards(c *gin.Context) {
 		return
 	}
 
-	cards, err := h.cardService.ListCards(userIDUUID)
+	userCards, err := h.cardService.ListCards(userIDUUID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, cards)
+	family, err := h.familyService.GetFamilyByUserID(userIDUUID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var familyCards []entitycard.Card
+	if family != nil {
+		familyCards, err = h.cardService.ListCards(family.Leader.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, api.ListCardsResponse{
+		UserCards:   userCards,
+		FamilyCards: familyCards,
+	})
 }
 
 // DeleteCard godoc
@@ -107,7 +129,7 @@ func (h *cardHandler) ListCards(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Card ID"
 // @Success 204
-// @Router /cards/:id [delete]
+// @Router /cards/{id} [delete]
 func (h *cardHandler) DeleteCard(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
@@ -124,12 +146,6 @@ func (h *cardHandler) DeleteCard(c *gin.Context) {
 	cardID, err := uuid.Parse(cardIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid card ID"})
-		return
-	}
-
-	var request api.CreateCardRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

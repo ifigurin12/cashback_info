@@ -31,7 +31,7 @@ func (f *familyUserRepository) Create(familyUser model.FamilyUserDB) error {
 
 func (f *familyUserRepository) GetByFamilyID(familyID uuid.UUID) ([]model.FamilyUserDB, error) {
 	var familyUsers []model.FamilyUserDB
-	if err := f.db.Where("family_id = ?", familyID).Find(&familyUsers).Error; err != nil {
+	if err := f.db.Preload("Family").Preload("Family.Leader").Preload("Family.Members").Where("family_id = ?", familyID).Find(&familyUsers).Error; err != nil {
 		return nil, err
 	}
 	return familyUsers, nil
@@ -39,7 +39,7 @@ func (f *familyUserRepository) GetByFamilyID(familyID uuid.UUID) ([]model.Family
 
 func (f *familyUserRepository) GetByUserID(userID uuid.UUID) (*model.FamilyUserDB, error) {
 	var familyUser model.FamilyUserDB
-	if err := f.db.Where("user_id = ?", userID).First(&familyUser).Error; err != nil {
+	if err := f.db.Preload("Family").Preload("Family.Leader").Preload("Family.Members").Where("user_id = ?", userID).First(&familyUser).Error; err != nil {
 		return nil, err
 	}
 	return &familyUser, nil

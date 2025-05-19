@@ -57,10 +57,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/card.Card"
-                            }
+                            "$ref": "#/definitions/api.ListCardsResponse"
                         }
                     }
                 }
@@ -103,7 +100,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cards/:id": {
+        "/cards/{id}": {
             "delete": {
                 "security": [
                     {
@@ -291,6 +288,40 @@ const docTemplate = `{
             }
         },
         "/families": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Получение семьи по id из Authorization header или family id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Family"
+                ],
+                "summary": "Получение семьи",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Family ID",
+                        "name": "family-id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/family.Family"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -356,48 +387,19 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/invite.FamilyInvite"
+                            }
+                        }
                     }
                 }
             }
         },
         "/families/{family-id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Получение семьи по id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Family"
-                ],
-                "summary": "Получение семьи",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Family ID",
-                        "name": "family-id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/family.Family"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "security": [
                     {
@@ -758,6 +760,27 @@ const docTemplate = `{
                 }
             }
         },
+        "api.ListCardsResponse": {
+            "type": "object",
+            "required": [
+                "family_cards",
+                "user_cards"
+            ],
+            "properties": {
+                "family_cards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/card.Card"
+                    }
+                },
+                "user_cards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/card.Card"
+                    }
+                }
+            }
+        },
         "api.UpdateCashbacksRequest": {
             "type": "object",
             "required": [
@@ -826,17 +849,17 @@ const docTemplate = `{
         "cashback.Cashback": {
             "type": "object",
             "required": [
-                "cashback_percentage"
+                "percentage"
             ],
             "properties": {
-                "cashback_limit": {
-                    "type": "integer"
-                },
-                "cashback_percentage": {
-                    "type": "number"
-                },
                 "end_date": {
                     "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "percentage": {
+                    "type": "number"
                 },
                 "start_date": {
                     "type": "string"
@@ -875,42 +898,15 @@ const docTemplate = `{
         "category.CategoryWithCashback": {
             "type": "object",
             "required": [
-                "cashback_percentage",
-                "id",
-                "mcc_codes",
-                "source",
-                "title"
+                "cashback",
+                "category"
             ],
             "properties": {
-                "cashback_limit": {
-                    "type": "integer"
+                "cashback": {
+                    "$ref": "#/definitions/cashback.Cashback"
                 },
-                "cashback_percentage": {
-                    "type": "number"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "mcc_codes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/mcc.MCC"
-                    }
-                },
-                "source": {
-                    "$ref": "#/definitions/category.Source"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
+                "category": {
+                    "$ref": "#/definitions/category.Category"
                 }
             }
         },
@@ -948,6 +944,25 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "invite.FamilyInvite": {
+            "type": "object",
+            "required": [
+                "family",
+                "id",
+                "user"
+            ],
+            "properties": {
+                "family": {
+                    "$ref": "#/definitions/family.Family"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/user.User"
                 }
             }
         },

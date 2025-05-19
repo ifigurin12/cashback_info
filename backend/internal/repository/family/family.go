@@ -40,7 +40,7 @@ func (f *familyRepository) GetByID(id uuid.UUID) (*model.FamilyDB, error) {
 
 func (f *familyRepository) GetByLeaderID(leaderID uuid.UUID) (*model.FamilyDB, error) {
 	var family model.FamilyDB
-	if err := f.db.Where("leader_id = ?", leaderID).First(&family).Error; err != nil {
+	if err := f.db.Preload("Members").Preload("Leader").Where("leader_id = ?", leaderID).First(&family).Error; err != nil {
 		return nil, err
 	}
 	return &family, nil

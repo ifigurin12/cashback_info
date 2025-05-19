@@ -44,6 +44,20 @@ definitions:
     required:
     - title
     type: object
+  api.ListCardsResponse:
+    properties:
+      family_cards:
+        items:
+          $ref: '#/definitions/card.Card'
+        type: array
+      user_cards:
+        items:
+          $ref: '#/definitions/card.Card'
+        type: array
+    required:
+    - family_cards
+    - user_cards
+    type: object
   api.UpdateCashbacksRequest:
     properties:
       cashbacks:
@@ -90,16 +104,16 @@ definitions:
     type: object
   cashback.Cashback:
     properties:
-      cashback_limit:
-        type: integer
-      cashback_percentage:
-        type: number
       end_date:
         type: string
+      limit:
+        type: integer
+      percentage:
+        type: number
       start_date:
         type: string
     required:
-    - cashback_percentage
+    - percentage
     type: object
   category.Category:
     properties:
@@ -123,32 +137,13 @@ definitions:
     type: object
   category.CategoryWithCashback:
     properties:
-      cashback_limit:
-        type: integer
-      cashback_percentage:
-        type: number
-      description:
-        type: string
-      end_date:
-        type: string
-      id:
-        type: string
-      mcc_codes:
-        items:
-          $ref: '#/definitions/mcc.MCC'
-        type: array
-      source:
-        $ref: '#/definitions/category.Source'
-      start_date:
-        type: string
-      title:
-        type: string
+      cashback:
+        $ref: '#/definitions/cashback.Cashback'
+      category:
+        $ref: '#/definitions/category.Category'
     required:
-    - cashback_percentage
-    - id
-    - mcc_codes
-    - source
-    - title
+    - cashback
+    - category
     type: object
   category.Source:
     enum:
@@ -175,6 +170,19 @@ definitions:
     - leader
     - members
     - title
+    type: object
+  invite.FamilyInvite:
+    properties:
+      family:
+        $ref: '#/definitions/family.Family'
+      id:
+        type: string
+      user:
+        $ref: '#/definitions/user.User'
+    required:
+    - family
+    - id
+    - user
     type: object
   mcc.MCC:
     properties:
@@ -281,9 +289,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/card.Card'
-            type: array
+            $ref: '#/definitions/api.ListCardsResponse'
       security:
       - BearerAuth: []
       summary: Список карт пользователя
@@ -312,7 +318,7 @@ paths:
       summary: "Создает новую карту\tпользователя"
       tags:
       - Card
-  /cards/:id:
+  /cards/{id}:
     delete:
       consumes:
       - application/json
@@ -432,6 +438,27 @@ paths:
       tags:
       - Auth
   /families:
+    get:
+      consumes:
+      - application/json
+      description: Получение семьи по id из Authorization header или family id
+      parameters:
+      - description: Family ID
+        in: query
+        name: family-id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/family.Family'
+      security:
+      - BearerAuth: []
+      summary: Получение семьи
+      tags:
+      - Family
     post:
       consumes:
       - application/json
@@ -474,28 +501,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Удаление семьи
-      tags:
-      - Family
-    get:
-      consumes:
-      - application/json
-      description: Получение семьи по id
-      parameters:
-      - description: Family ID
-        in: path
-        name: family-id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/family.Family'
-      security:
-      - BearerAuth: []
-      summary: Получение семьи
       tags:
       - Family
   /families/{family-id}/invites:
@@ -633,8 +638,12 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/invite.FamilyInvite'
+            type: array
       security:
       - BearerAuth: []
       summary: Получение приглашений
